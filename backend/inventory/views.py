@@ -1,3 +1,21 @@
-from django.shortcuts import render
+from rest_framework import viewsets
+from .models import RawMaterial, Packaging
+from rest_framework import serializers
 
-# Create your views here.
+class RawMaterialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RawMaterial
+        fields = '__all__'
+
+class PackagingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Packaging
+        fields = '__all__'
+
+class RawMaterialViewSet(viewsets.ModelViewSet):
+    queryset = RawMaterial.objects.all()
+    serializer_class = RawMaterialSerializer
+
+class PackagingViewSet(viewsets.ModelViewSet):
+    queryset = Packaging.objects.all()
+    serializer_class = PackagingSerializer
