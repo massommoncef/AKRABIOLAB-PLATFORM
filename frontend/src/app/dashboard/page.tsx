@@ -10,11 +10,11 @@ import {
 } from 'lucide-react'
 
 export default function OwnerDashboard() {
-  const [clients, setClients] = useState([])
-  const [orders, setOrders] = useState([])
-  const [products, setProducts] = useState([])
-  const [materials, setMaterials] = useState([])
-  const [categories, setCategories] = useState([])
+  const [clients, setClients] = useState<any[]>([])
+  const [orders, setOrders] = useState<any[]>([])
+  const [products, setProducts] = useState<any[]>([])
+  const [materials, setMaterials] = useState<any[]>([])
+  const [categories, setCategories] = useState<any[]>([])
   const [activeTab, setActiveTab] = useState('overview')
   
   const [clientSearch, setClientSearch] = useState('')
@@ -38,9 +38,9 @@ export default function OwnerDashboard() {
     }
   }
 
-  const [selectedMaterial, setSelectedMaterial] = useState(null)
-  const [selectedProduct, setSelectedProduct] = useState(null)
-  const [stockAddAmount, setStockAddAddAmount] = useState(1)
+  const [selectedMaterial, setSelectedMaterial] = useState<any>(null)
+  const [selectedProduct, setSelectedProduct] = useState<any>(null)
+  const [stockAddAmount, setStockAddAddAmount] = useState<any>(1)
 
   const [wizardStep, setWizardStep] = useState(1)
   const [clientSearchQuery, setClientSearchQuery] = useState('')
@@ -129,7 +129,7 @@ export default function OwnerDashboard() {
     router.push('/admin-login');
   }
 
-  const handleDeliverOrder = async (orderId) => {
+  const handleDeliverOrder = async (orderId: string | number) => {
     const token = localStorage.getItem('akrabiolab_access');
     try {
       const res = await fetch(`http://127.0.0.1:8000/api/orders/list/${orderId}/`, {
@@ -148,12 +148,12 @@ export default function OwnerDashboard() {
     } catch (err) { console.error("Deliver error:", err) }
   }
 
-  const handleUpdateStock = async (e) => {
+  const handleUpdateStock = async (e: React.FormEvent) => {
     e.preventDefault();
     const token = localStorage.getItem('akrabiolab_access');
     try {
-      const newQty = parseFloat(selectedMaterial.quantity) + parseFloat(stockAddAmount);
-      const res = await fetch(`http://127.0.0.1:8000/api/inventory/materials/${selectedMaterial.id}/`, {
+      const newQty = (selectedMaterial as any).quantity + parseFloat(stockAddAmount as any);
+      const res = await fetch(`http://127.0.0.1:8000/api/inventory/materials/${(selectedMaterial as any).id}/`, {
           method: 'PATCH',
           headers: { 
             'Content-Type': 'application/json',
@@ -168,12 +168,12 @@ export default function OwnerDashboard() {
     } catch (err) { console.error("Stock update error:", err) }
   }
 
-  const handleUpdateProductStock = async (e) => {
+  const handleUpdateProductStock = async (e: React.FormEvent) => {
     e.preventDefault();
     const token = localStorage.getItem('akrabiolab_access');
     try {
-      const newQty = parseFloat(selectedProduct.quantity) + parseFloat(stockAddAmount);
-      const res = await fetch(`http://127.0.0.1:8000/api/products/items/${selectedProduct.id}/`, {
+      const newQty = parseFloat((selectedProduct as any).quantity) + parseFloat(stockAddAmount as any);
+      const res = await fetch(`http://127.0.0.1:8000/api/products/items/${(selectedProduct as any).id}/`, {
           method: 'PATCH',
           headers: { 
             'Content-Type': 'application/json',
@@ -188,7 +188,7 @@ export default function OwnerDashboard() {
     } catch (err) { console.error("Product stock update error:", err) }
   }
 
-  const handleAddProduct = async (e) => {
+  const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     const token = localStorage.getItem('akrabiolab_access');
     const formData = new FormData();
@@ -215,7 +215,7 @@ export default function OwnerDashboard() {
     } catch (err) { console.error(err) }
   }
 
-  const handleUpdateProduct = async (e) => {
+  const handleUpdateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     const token = localStorage.getItem('akrabiolab_access');
     const formData = new FormData();
@@ -226,8 +226,8 @@ export default function OwnerDashboard() {
     formData.append('category', editProductData.category);
     formData.append('quantity', editProductData.quantity.toString());
     formData.append('unit', editProductData.unit);
-    if (editProductData.image instanceof File) {
-        formData.append('image', editProductData.image);
+    if ((editProductData.image as any) instanceof File) {
+        formData.append('image', editProductData.image as any);
     }
 
     try {
@@ -243,7 +243,7 @@ export default function OwnerDashboard() {
     } catch (err) { console.error("Update product error:", err) }
   }
 
-  const handleDeleteProduct = async (productId) => {
+  const handleDeleteProduct = async (productId: string | number) => {
     if (confirm("Supprimer définitivement ce produit du catalogue ?")) {
       const token = localStorage.getItem('akrabiolab_access');
       try {
@@ -299,7 +299,7 @@ export default function OwnerDashboard() {
     }
   }
 
-  const handleAddClient = async (e) => {
+  const handleAddClient = async (e: React.FormEvent) => {
     e.preventDefault()
     const token = localStorage.getItem('akrabiolab_access');
     try {
@@ -323,7 +323,7 @@ export default function OwnerDashboard() {
     } catch (err) { console.error("Client creation error:", err) }
   }
 
-  const handleAddPayment = async (e) => {
+  const handleAddPayment = async (e: React.FormEvent) => {
     e.preventDefault()
     const token = localStorage.getItem('akrabiolab_access');
     try {
@@ -342,7 +342,7 @@ export default function OwnerDashboard() {
     } catch (err) { console.error("Payment error:", err) }
   }
 
-  const handleDeleteOrder = async (order) => {
+  const handleDeleteOrder = async (order: any) => {
     let message = `Voulez-vous supprimer cette commande ?`;
     if (order.status === 'DELIVERED') {
         const total = parseFloat(order.total_amount_ttc).toLocaleString();
@@ -361,9 +361,9 @@ export default function OwnerDashboard() {
     }
   }
 
-  const handleClientWizard = (e) => {
+  const handleClientWizard = (e: React.FormEvent) => {
     e.preventDefault();
-    const found = clients.find(c => c.name.toLowerCase() === clientSearchQuery.toLowerCase());
+    const found = (clients as any[]).find(c => c.name.toLowerCase() === clientSearchQuery.toLowerCase());
     if (found) {
         setNewOrder({...newOrder, client: found.id});
         setWizardStep(2);
@@ -377,17 +377,17 @@ export default function OwnerDashboard() {
   }
 
   const calculateWizardTotal = () => {
-    const totalHT = newOrder.items.reduce((acc, item) => acc + (parseFloat(item.quantity || 0) * parseFloat(item.price_at_sale || 0)), 0);
+    const totalHT = newOrder.items.reduce((acc: number, item: any) => acc + (parseFloat(item.quantity || 0) * parseFloat(item.price_at_sale || 0)), 0);
     const totalTTC = totalHT * 1.19;
     return { ht: totalHT, ttc: totalTTC };
   }
 
-  const pendingOrders = orders.filter(o => o.status === 'PENDING').filter(o => o.client_name.toLowerCase().includes(orderSearch.toLowerCase()))
-  const historyOrders = orders.filter(o => o.status === 'DELIVERED').filter(o => o.client_name.toLowerCase().includes(orderSearch.toLowerCase()))
-  const filteredClients = clients.filter(c => c.name.toLowerCase().includes(clientSearch.toLowerCase()))
+  const pendingOrders = (orders as any[]).filter(o => o.status === 'PENDING').filter(o => o.client_name.toLowerCase().includes(orderSearch.toLowerCase()))
+  const historyOrders = (orders as any[]).filter(o => o.status === 'DELIVERED').filter(o => o.client_name.toLowerCase().includes(orderSearch.toLowerCase()))
+  const filteredClients = (clients as any[]).filter(c => c.name.toLowerCase().includes(clientSearch.toLowerCase()))
 
-  const totalPaid = clients.reduce((acc, c) => acc + parseFloat(c.total_paid), 0)
-  const currentBalance = clients.reduce((acc, c) => acc + parseFloat(c.total_debt - c.total_paid), 0)
+  const totalPaid = (clients as any[]).reduce((acc: number, c: any) => acc + (parseFloat(c.total_paid) || 0), 0)
+  const currentBalance = (clients as any[]).reduce((acc: number, c: any) => acc + (parseFloat(c.total_debt || 0) - parseFloat(c.total_paid || 0)), 0)
 
   const renderProductImage = (img: string | null) => {
     if (!img) return '/images/akrabilab-logo.png';
@@ -428,7 +428,7 @@ export default function OwnerDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
                     <InsightCard label="Créances Dehors" value={currentBalance.toLocaleString()} unit="DA" status="danger" icon={<AlertCircle />} desc="Ventes livrées non payées" />
                     <InsightCard label="Encaissement Réel" value={totalPaid.toLocaleString()} unit="DA" status="success" icon={<CheckCircle2 />} desc="Cash en caisse" />
-                    <InsightCard label="Gains Brut" value={orders.reduce((acc, o) => acc + parseFloat(o.pure_gain), 0).toLocaleString()} unit="DA" status="info" icon={<TrendingUp />} desc="Bénéfice Réel" />
+                    <InsightCard label="Gains Brut" value={(orders as any[]).reduce((acc: number, o: any) => acc + parseFloat(o.pure_gain), 0).toLocaleString()} unit="DA" status="info" icon={<TrendingUp />} desc="Bénéfice Réel" />
                 </div>
                 <div className="bg-white p-6 md:p-12 rounded-[2rem] md:rounded-[3.5rem] shadow-xl border border-slate-100 flex flex-col md:flex-row items-center justify-between relative overflow-hidden gap-8">
                     <div className="relative z-10 text-center md:text-left">
@@ -448,7 +448,7 @@ export default function OwnerDashboard() {
                         <Package className="text-emerald-600" size={24} />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 p-6 md:p-10">
-                        {products.map(prod => (
+                        {(products as any[]).map((prod: any) => (
                             <div key={prod.id} className="p-6 md:p-8 bg-slate-50 rounded-[2rem] md:rounded-[2.5rem] border border-slate-100 group hover:bg-white hover:shadow-2xl transition-all relative overflow-hidden">
                                 <div className="flex justify-between items-start mb-4 md:mb-6">
                                     <div className="w-10 h-10 md:w-14 md:h-14 bg-orange-100 text-orange-600 rounded-xl md:rounded-2xl flex items-center justify-center"><Package size={20}/></div>
@@ -473,7 +473,7 @@ export default function OwnerDashboard() {
                         <Layers className="text-slate-400" size={24} />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 p-6 md:p-10">
-                        {materials.map(mat => (
+                        {(materials as any[]).map((mat: any) => (
                             <div key={mat.id} className="p-6 md:p-8 bg-slate-50 rounded-[2rem] md:rounded-[2.5rem] border border-slate-100 group hover:bg-white hover:shadow-2xl transition-all">
                                 <div className="flex justify-between items-start mb-4 md:mb-6">
                                     <div className="w-10 h-10 md:w-14 md:h-14 bg-emerald-100 text-emerald-600 rounded-xl md:rounded-2xl flex items-center justify-center"><Layers size={20}/></div>
@@ -504,11 +504,11 @@ export default function OwnerDashboard() {
                     <table className="w-full text-left min-w-[800px] md:min-w-0">
                         <thead className="bg-slate-50 text-[10px] md:text-[11px] uppercase font-black text-slate-400"><tr><th className="px-6 md:px-10 py-4 md:py-6">Client</th><th className="px-6 md:px-10 py-4 md:py-6">Composition</th><th className="px-6 md:px-10 py-4 md:py-6">Total TTC</th><th className="px-6 md:px-10 py-4 md:py-6 text-center">Action</th></tr></thead>
                         <tbody className="divide-y divide-slate-100">
-                            {pendingOrders.map(order => (
+                            {(pendingOrders as any[]).map((order: any) => (
                                 <tr key={order.id} className="hover:bg-emerald-50/30 transition-colors">
                                     <td className="px-6 md:px-10 py-6 md:py-8 font-black text-base md:text-lg">{order.client_name}</td>
                                     <td className="px-6 md:px-10 py-6 md:py-8">
-                                        <div className="flex flex-wrap gap-1 md:gap-2">{order.items.map((item, idx) => (
+                                        <div className="flex flex-wrap gap-1 md:gap-2">{(order.items as any[]).map((item: any, idx: number) => (
                                             <div key={idx} className="bg-emerald-100/50 text-emerald-800 px-3 md:px-4 py-1 md:py-1.5 rounded-lg md:rounded-xl text-[9px] md:text-[11px] font-black border border-emerald-100">{item.product_name} x{item.quantity}</div>
                                         ))}</div>
                                     </td>
@@ -534,7 +534,7 @@ export default function OwnerDashboard() {
                     <table className="w-full text-left min-w-[800px] md:min-w-0">
                         <thead className="bg-slate-50 text-[10px] md:text-[11px] uppercase font-black text-slate-400"><tr><th className="px-6 md:px-10 py-4 md:py-6">Date</th><th className="px-6 md:px-10 py-4 md:py-6">Client</th><th className="px-6 md:px-10 py-4 md:py-6">Montant TTC</th><th className="px-6 md:px-10 py-4 md:py-6 text-center">Documents</th><th className="px-6 md:px-10 py-4 md:py-6 text-center">Action</th></tr></thead>
                         <tbody className="divide-y divide-slate-100">
-                            {historyOrders.map(order => (
+                            {(historyOrders as any[]).map((order: any) => (
                                 <tr key={order.id} className="hover:bg-slate-50/50 transition-colors">
                                     <td className="px-6 md:px-10 py-6 md:py-8 text-xs md:text-sm font-bold text-slate-400">{new Date(order.created_at).toLocaleDateString()}</td>
                                     <td className="px-6 md:px-10 py-6 md:py-8 font-black text-base md:text-lg">{order.client_name}</td>
@@ -561,7 +561,7 @@ export default function OwnerDashboard() {
                     <button onClick={() => setShowProductModal(true)} className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 bg-orange-500 text-white font-black rounded-xl md:rounded-2xl shadow-xl hover:bg-orange-600 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 text-xs md:text-base"><Plus size={20}/> Nouveau Produit</button>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 p-6 md:p-10">
-                    {products.map(product => (
+                    {(products as any[]).map((product: any) => (
                         <div key={product.id} className="group bg-slate-50 rounded-[2rem] md:rounded-[3rem] overflow-hidden border border-slate-100 hover:bg-white hover:shadow-2xl transition-all relative">
                             <div className="h-40 md:h-48 overflow-hidden relative">
                                 <img src={renderProductImage(product.image)} alt={product.name} className={`w-full h-full ${product.image ? 'object-cover' : 'object-contain p-8 opacity-20'} group-hover:scale-110 transition-transform duration-500`} />
@@ -617,7 +617,7 @@ export default function OwnerDashboard() {
                     <table className="w-full text-left min-w-[600px] md:min-w-0">
                         <thead className="bg-slate-50 text-[10px] md:text-[11px] uppercase font-black text-slate-400"><tr><th className="px-6 md:px-10 py-4 md:py-6">Client</th><th className="px-6 md:px-10 py-4 md:py-6">Dette Livrée</th><th className="px-6 md:px-10 py-4 md:py-6 text-center">Action</th></tr></thead>
                         <tbody className="divide-y divide-slate-100">
-                            {filteredClients.map(client => (
+                            {(filteredClients as any[]).map((client: any) => (
                                 <tr key={client.id} className="hover:bg-slate-50/50 transition-colors">
                                     <td className="px-6 md:px-10 py-6 md:py-8"><div className="font-black text-slate-800 text-base md:text-lg">{client.name}</div><div className="text-[10px] md:text-xs text-slate-400 font-bold">{client.phone}</div></td>
                                     <td className="px-6 md:px-10 py-6 md:py-8 font-black text-rose-600 text-lg md:text-xl">{(parseFloat(client.total_debt) - parseFloat(client.total_paid)).toLocaleString()} DA</td>
@@ -641,10 +641,10 @@ export default function OwnerDashboard() {
                         <div className="text-center py-4 md:py-8">
                             <h2 className="text-xl md:text-3xl font-black mb-6 md:mb-8 uppercase tracking-tighter">Client de la commande ?</h2>
                             <form onSubmit={handleClientWizard} className="relative">
-                                <input autoFocus type="text" placeholder="Nom du client..." className="w-full p-6 md:p-8 bg-slate-100 border-none rounded-[1.5rem] md:rounded-[2.5rem] text-lg md:text-2xl font-bold text-center outline-none focus:ring-4 ring-emerald-500/10" value={clientSearchQuery} onChange={(e) => setClientSearchQuery(e.target.value)} />
+                                <input autoFocus type="text" placeholder="Nom du client..." className="w-full p-6 md:p-8 bg-slate-100 border-none rounded-[1.5rem] md:rounded-[2.5rem] text-lg md:text-2xl font-bold text-center outline-none focus:ring-4 ring-emerald-500/10" value={clientSearchQuery} onChange={(e: any) => setClientSearchQuery(e.target.value)} />
                                 {clientSearchQuery.length > 1 && (
                                     <div className="absolute top-full left-0 right-0 mt-4 bg-white border border-slate-200 rounded-[1.5rem] md:rounded-[2rem] shadow-2xl z-[130] overflow-hidden max-h-60 overflow-y-auto">
-                                        {clients.filter(c => c.name.toLowerCase().includes(clientSearchQuery.toLowerCase())).map(c => (
+                                        {(clients as any[]).filter((c: any) => c.name.toLowerCase().includes(clientSearchQuery.toLowerCase())).map((c: any) => (
                                             <button key={c.id} type="button" onClick={() => { setNewOrder({...newOrder, client: c.id}); setWizardStep(2); }} className="w-full p-4 md:p-6 text-left hover:bg-emerald-50 font-black border-b border-slate-50 flex justify-between items-center group"><span className="text-sm md:text-base">{c.name}</span><span className="text-[8px] md:text-[10px] uppercase text-emerald-600 bg-emerald-50 px-2 md:px-3 py-1 rounded-full">Existant</span></button>
                                         ))}
                                         <button type="button" onClick={() => { setNewClient({...newClient, name: clientSearchQuery}); setShowClientModal(true); }} className="w-full p-4 md:p-6 text-left bg-slate-900 text-white font-black flex justify-between items-center"><span className="text-sm md:text-base">Créer "{clientSearchQuery}"</span><span className="text-[8px] md:text-[10px] uppercase text-slate-400 tracking-widest">Nouveau</span></button>
@@ -654,22 +654,22 @@ export default function OwnerDashboard() {
                             </form>
                         </div>
                     ) : (
-                        <form onSubmit={handleFinalizeOrder} className="space-y-6 md:space-y-8">
-                            <div className="flex items-start justify-between border-b pb-4 md:pb-6"><div><h3 className="text-sm md:text-xl font-black uppercase tracking-widest text-slate-400">Client</h3><p className="text-lg md:text-2xl font-black text-slate-800 mt-1 md:mt-2">{clients.find(c => c.id == newOrder.client)?.name}</p></div><button type="button" onClick={() => setWizardStep(1)} className="px-3 md:px-4 py-1.5 md:py-2 border border-slate-200 rounded-lg md:rounded-xl text-[8px] md:text-[10px] font-black uppercase text-slate-400 hover:text-emerald-600 transition-all">Changer</button></div>
+                        <form onSubmit={handleFinalizeOrder as any} className="space-y-6 md:space-y-8">
+                            <div className="flex items-start justify-between border-b pb-4 md:pb-6"><div><h3 className="text-sm md:text-xl font-black uppercase tracking-widest text-slate-400">Client</h3><p className="text-lg md:text-2xl font-black text-slate-800 mt-1 md:mt-2">{(clients as any[]).find((c: any) => c.id == newOrder.client)?.name}</p></div><button type="button" onClick={() => setWizardStep(1)} className="px-3 md:px-4 py-1.5 md:py-2 border border-slate-200 rounded-lg md:rounded-xl text-[8px] md:text-[10px] font-black uppercase text-slate-400 hover:text-emerald-600 transition-all">Changer</button></div>
                             <div className="space-y-2">
                                 <p className="text-[10px] font-black uppercase text-slate-400 ml-1">Date de livraison prévue</p>
-                                <input type="date" className="w-full p-4 bg-slate-50 border-none rounded-xl md:rounded-2xl font-black text-sm md:text-base" value={newOrder.expected_delivery} min={new Date().toISOString().split('T')[0]} onChange={(e) => setNewOrder({...newOrder, expected_delivery: e.target.value})} required />
+                                <input type="date" className="w-full p-4 bg-slate-50 border-none rounded-xl md:rounded-2xl font-black text-sm md:text-base" value={newOrder.expected_delivery} min={new Date().toISOString().split('T')[0]} onChange={(e: any) => setNewOrder({...newOrder, expected_delivery: e.target.value})} required />
                             </div>
                             <div className="space-y-4 max-h-48 md:max-h-60 overflow-y-auto pr-2">
-                                {newOrder.items.map((item, idx) => (
+                                {newOrder.items.map((item: any, idx: number) => (
                                     <div key={idx} className="grid grid-cols-12 gap-2 md:gap-3 items-center">
-                                        <select className="col-span-12 md:col-span-7 p-3 md:p-4 bg-slate-50 rounded-xl md:rounded-2xl font-black text-xs md:text-base" value={item.product} onChange={(e) => {
-                                            const items = [...newOrder.items]; const prod = products.find(p => p.id == e.target.value);
+                                        <select className="col-span-12 md:col-span-7 p-3 md:p-4 bg-slate-50 rounded-xl md:rounded-2xl font-black text-xs md:text-base" value={item.product} onChange={(e: any) => {
+                                            const items = [...newOrder.items]; const prod = (products as any[]).find((p: any) => p.id == e.target.value);
                                             items[idx].product = e.target.value; items[idx].price_at_sale = prod ? prod.unit_price : 0;
                                             setNewOrder({...newOrder, items});
-                                        }} required><option value="">Produit...</option>{products.map(p => <option key={p.id} value={p.id}>{p.name} ({p.unit_price} DA)</option>)}</select>
+                                        }} required><option value="">Produit...</option>{(products as any[]).map((p: any) => <option key={p.id} value={p.id}>{p.name} ({p.unit_price} DA)</option>)}</select>
                                         <div className="col-span-9 md:col-span-3 flex items-center bg-slate-50 rounded-xl md:rounded-2xl overflow-hidden">
-                                            <input type="number" placeholder="Qté" className="w-full p-3 md:p-4 bg-transparent border-none font-black text-center text-xs md:text-base" onFocus={(e) => e.target.select()} value={item.quantity} onChange={(e) => { const items = [...newOrder.items]; items[idx].quantity = e.target.value; setNewOrder({...newOrder, items}); }} required />
+                                            <input type="number" placeholder="Qté" className="w-full p-3 md:p-4 bg-transparent border-none font-black text-center text-xs md:text-base" onFocus={(e: any) => e.target.select()} value={item.quantity} onChange={(e: any) => { const items = [...newOrder.items]; items[idx].quantity = e.target.value; setNewOrder({...newOrder, items}); }} required />
                                         </div>
                                         <button type="button" onClick={() => {
                                             if (newOrder.items.length > 1) {
@@ -702,10 +702,10 @@ export default function OwnerDashboard() {
                     <button onClick={() => setShowClientModal(false)} className="absolute top-10 right-10 p-2 hover:bg-slate-100 rounded-full text-slate-400"><X/></button>
                     <h2 className="text-3xl font-black mb-10 text-center uppercase tracking-tighter">Enregistrer Client</h2>
                     <form onSubmit={handleAddClient} className="grid grid-cols-2 gap-6">
-                        <input className="col-span-2 p-5 bg-slate-50 rounded-2xl font-bold" type="text" placeholder="Nom Complet" value={newClient.name} onChange={(e) => setNewClient({...newClient, name: e.target.value})} required />
-                        <input className="p-5 bg-slate-50 rounded-2xl font-bold" type="text" placeholder="Téléphone" value={newClient.phone} onChange={(e) => setNewClient({...newClient, phone: e.target.value})} required />
-                        <select className="p-5 bg-slate-50 rounded-2xl font-bold" value={newClient.domain} onChange={(e) => setNewClient({...newClient, domain: e.target.value})}><option value="SOCIETE">Société</option><option value="PARFUMERIE">Parfumerie</option></select>
-                        <input className="col-span-2 p-5 bg-slate-50 rounded-2xl font-bold" type="text" placeholder="Adresse" value={newClient.address} onChange={(e) => setNewClient({...newClient, address: e.target.value})} required />
+                        <input className="col-span-2 p-5 bg-slate-50 rounded-2xl font-bold" type="text" placeholder="Nom Complet" value={newClient.name} onChange={(e: any) => setNewClient({...newClient, name: e.target.value})} required />
+                        <input className="p-5 bg-slate-50 rounded-2xl font-bold" type="text" placeholder="Téléphone" value={newClient.phone} onChange={(e: any) => setNewClient({...newClient, phone: e.target.value})} required />
+                        <select className="p-5 bg-slate-50 rounded-2xl font-bold" value={newClient.domain} onChange={(e: any) => setNewClient({...newClient, domain: e.target.value})}><option value="SOCIETE">Société</option><option value="PARFUMERIE">Parfumerie</option></select>
+                        <input className="col-span-2 p-5 bg-slate-50 rounded-2xl font-bold" type="text" placeholder="Adresse" value={newClient.address} onChange={(e: any) => setNewClient({...newClient, address: e.target.value})} required />
                         <button type="submit" className="col-span-2 py-5 bg-slate-900 text-white font-black rounded-2xl shadow-xl hover:bg-emerald-600 transition-all uppercase tracking-widest text-xs">Valider</button>
                     </form>
                 </motion.div>
@@ -720,10 +720,10 @@ export default function OwnerDashboard() {
                     <form onSubmit={handleAddPayment} className="space-y-6">
                         <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
                             <p className="text-[10px] font-black uppercase text-emerald-600 mb-1">Client</p>
-                            <p className="font-black text-slate-800">{clients.find(c => c.id === newPayment.client)?.name}</p>
+                            <p className="font-black text-slate-800">{(clients as any[]).find((c: any) => c.id === newPayment.client)?.name}</p>
                         </div>
-                        <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold text-2xl text-center" type="number" onFocus={(e) => e.target.select()} value={newPayment.amount} onChange={(e) => setNewPayment({...newPayment, amount: e.target.value})} required />
-                        <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold" type="text" placeholder="Note" value={newPayment.note} onChange={(e) => setNewPayment({...newPayment, note: e.target.value})} />
+                        <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold text-2xl text-center" type="number" onFocus={(e: any) => e.target.select()} value={newPayment.amount} onChange={(e: any) => setNewPayment({...newPayment, amount: e.target.value})} required />
+                        <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold" type="text" placeholder="Note" value={newPayment.note} onChange={(e: any) => setNewPayment({...newPayment, note: e.target.value})} />
                         <button type="submit" className="w-full py-5 bg-emerald-600 text-white font-black rounded-2xl shadow-xl hover:bg-emerald-700 transition-all uppercase tracking-widest text-xs">Valider</button>
                     </form>
                 </motion.div>
@@ -738,11 +738,11 @@ export default function OwnerDashboard() {
                     <form onSubmit={handleUpdateStock} className="space-y-6">
                         <div className="p-4 bg-slate-50 rounded-2xl">
                             <p className="text-[10px] font-black uppercase text-slate-400 mb-1">Matière</p>
-                            <p className="font-black text-slate-800">{selectedMaterial.name}</p>
+                            <p className="font-black text-slate-800">{(selectedMaterial as any).name}</p>
                         </div>
                         <div>
-                            <p className="text-[10px] font-black uppercase text-slate-400 mb-2 ml-1">Ajouter ({selectedMaterial.unit})</p>
-                            <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold text-2xl text-center" type="number" step="0.01" onFocus={(e) => e.target.select()} value={stockAddAmount} onChange={(e) => setStockAddAddAmount(e.target.value)} required />
+                            <p className="text-[10px] font-black uppercase text-slate-400 mb-2 ml-1">Ajouter ({(selectedMaterial as any).unit})</p>
+                            <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold text-2xl text-center" type="number" step="0.01" onFocus={(e: any) => e.target.select()} value={stockAddAmount} onChange={(e: any) => setStockAddAddAmount(e.target.value)} required />
                         </div>
                         <button type="submit" className="w-full py-5 bg-emerald-600 text-white font-black rounded-2xl shadow-xl hover:bg-emerald-700 transition-all uppercase tracking-widest text-xs">Confirmer</button>
                     </form>
@@ -758,11 +758,11 @@ export default function OwnerDashboard() {
                     <form onSubmit={handleUpdateProductStock} className="space-y-6">
                         <div className="p-4 bg-orange-50 rounded-2xl border border-orange-100">
                             <p className="text-[10px] font-black uppercase text-orange-600 mb-1">Produit Fini</p>
-                            <p className="font-black text-slate-800">{selectedProduct.name}</p>
+                            <p className="font-black text-slate-800">{(selectedProduct as any).name}</p>
                         </div>
                         <div>
-                            <p className="text-[10px] font-black uppercase text-slate-400 mb-2 ml-1">Quantité ({selectedProduct.unit})</p>
-                            <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold text-2xl text-center text-orange-600" type="number" step="0.01" onFocus={(e) => e.target.select()} value={stockAddAmount} onChange={(e) => setStockAddAddAmount(e.target.value)} required />
+                            <p className="text-[10px] font-black uppercase text-slate-400 mb-2 ml-1">Quantité ({(selectedProduct as any).unit})</p>
+                            <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold text-2xl text-center text-orange-600" type="number" step="0.01" onFocus={(e: any) => e.target.select()} value={stockAddAmount} onChange={(e: any) => setStockAddAddAmount(e.target.value)} required />
                         </div>
                         <button type="submit" className="w-full py-5 bg-orange-500 text-white font-black rounded-2xl shadow-xl hover:bg-orange-600 transition-all uppercase tracking-widest text-xs">Valider l'entrée</button>
                     </form>
@@ -778,18 +778,18 @@ export default function OwnerDashboard() {
                     <form onSubmit={handleAddProduct} className="grid grid-cols-2 gap-6">
                         <div className="col-span-2">
                             <p className="text-[10px] font-black uppercase text-slate-400 mb-1 ml-1">Nom</p>
-                            <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold" type="text" value={newProduct.name} onChange={(e) => handleNameChange(e)} required />
+                            <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold" type="text" value={newProduct.name} onChange={(e: any) => handleNameChange(e)} required />
                         </div>
                         <div className="col-span-2">
                             <p className="text-[10px] font-black uppercase text-slate-400 mb-1 ml-1">Catégorie</p>
-                            <select className="w-full p-5 bg-slate-50 rounded-2xl font-bold" value={newProduct.category} onChange={(e) => setNewProduct({...newProduct, category: e.target.value})} required>
+                            <select className="w-full p-5 bg-slate-50 rounded-2xl font-bold" value={newProduct.category} onChange={(e: any) => setNewProduct({...newProduct, category: e.target.value})} required>
                                 <option value="">Sélectionner...</option>
-                                {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                                {(categories as any[]).map((cat: any) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                             </select>
                         </div>
                         <div>
                             <p className="text-[10px] font-black uppercase text-slate-400 mb-1 ml-1">Unité</p>
-                            <select className="w-full p-5 bg-slate-50 rounded-2xl font-bold" value={newProduct.unit} onChange={(e) => setNewProduct({...newProduct, unit: e.target.value})} required>
+                            <select className="w-full p-5 bg-slate-50 rounded-2xl font-bold" value={newProduct.unit} onChange={(e: any) => setNewProduct({...newProduct, unit: e.target.value})} required>
                                 <option value="UNIT">Unités</option>
                                 <option value="KG">Kilogrammes</option>
                                 <option value="L">Litres</option>
@@ -797,27 +797,27 @@ export default function OwnerDashboard() {
                         </div>
                         <div>
                             <p className="text-[10px] font-black uppercase text-slate-400 mb-1 ml-1">Stock Initial</p>
-                            <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold" type="number" onFocus={(e) => e.target.select()} value={newProduct.quantity} onChange={(e) => setNewProduct({...newProduct, quantity: e.target.value})} />
+                            <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold" type="number" onFocus={(e: any) => e.target.select()} value={newProduct.quantity} onChange={(e: any) => setNewProduct({...newProduct, quantity: e.target.value})} />
                         </div>
                         <div>
                             <p className="text-[10px] font-black uppercase text-slate-400 mb-1 ml-1">Prix Achat (DA)</p>
-                            <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold" type="number" onFocus={(e) => e.target.select()} value={newProduct.purchase_price} onChange={(e) => setNewProduct({...newProduct, purchase_price: e.target.value})} required />
+                            <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold" type="number" onFocus={(e: any) => e.target.select()} value={newProduct.purchase_price} onChange={(e: any) => setNewProduct({...newProduct, purchase_price: e.target.value})} required />
                         </div>
                         <div>
                             <p className="text-[10px] font-black uppercase text-slate-400 mb-1 ml-1">Prix Vente (DA)</p>
-                            <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold" type="number" onFocus={(e) => e.target.select()} value={newProduct.unit_price} onChange={(e) => setNewProduct({...newProduct, unit_price: e.target.value})} required />
+                            <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold" type="number" onFocus={(e: any) => e.target.select()} value={newProduct.unit_price} onChange={(e: any) => setNewProduct({...newProduct, unit_price: e.target.value})} required />
                         </div>
                         <div className="col-span-2">
                             <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-300 rounded-2xl cursor-pointer bg-slate-50 hover:bg-emerald-50 transition-all">
                                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                     <Camera className="w-8 h-8 mb-2 text-slate-400" />
-                                    <p className="text-sm text-slate-500 font-bold">{newProduct.image ? newProduct.image.name : "Importer Photo"}</p>
+                                    <p className="text-sm text-slate-500 font-bold">{newProduct.image ? (newProduct.image as any).name : "Importer Photo"}</p>
                                 </div>
-                                <input type="file" className="hidden" accept="image/*" onChange={(e) => setNewProduct({...newProduct, image: e.target.files[0]})} />
+                                <input type="file" className="hidden" accept="image/*" onChange={(e: any) => setNewProduct({...newProduct, image: e.target.files[0]})} />
                             </label>
                         </div>
                         <div className="col-span-2">
-                            <textarea className="w-full p-5 bg-slate-50 rounded-2xl font-bold text-sm" rows={4} value={newProduct.description} onChange={(e) => setNewProduct({...newProduct, description: e.target.value})} />
+                            <textarea className="w-full p-5 bg-slate-50 rounded-2xl font-bold text-sm" rows={4} value={newProduct.description} onChange={(e: any) => setNewProduct({...newProduct, description: e.target.value})} />
                         </div>
                         <button type="submit" className="col-span-2 py-5 bg-emerald-600 text-white font-black rounded-2xl shadow-xl hover:bg-emerald-700 transition-all">Créer le Produit</button>
                     </form>
@@ -833,17 +833,17 @@ export default function OwnerDashboard() {
                     <form onSubmit={handleUpdateProduct} className="grid grid-cols-2 gap-6">
                         <div className="col-span-2">
                             <p className="text-[10px] font-black uppercase text-slate-400 mb-1 ml-1">Nom</p>
-                            <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold" type="text" value={editProductData.name} onChange={(e) => setEditProductData({...editProductData, name: e.target.value})} required />
+                            <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold" type="text" value={editProductData.name} onChange={(e: any) => setEditProductData({...editProductData, name: e.target.value})} required />
                         </div>
                         <div className="col-span-2">
                             <p className="text-[10px] font-black uppercase text-slate-400 mb-1 ml-1">Catégorie</p>
-                            <select className="w-full p-5 bg-slate-50 rounded-2xl font-bold" value={editProductData.category} onChange={(e) => setEditProductData({...editProductData, category: e.target.value})} required>
-                                {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                            <select className="w-full p-5 bg-slate-50 rounded-2xl font-bold" value={editProductData.category} onChange={(e: any) => setEditProductData({...editProductData, category: e.target.value})} required>
+                                {(categories as any[]).map((cat: any) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                             </select>
                         </div>
                         <div>
                             <p className="text-[10px] font-black uppercase text-slate-400 mb-1 ml-1">Unité</p>
-                            <select className="w-full p-5 bg-slate-50 rounded-2xl font-bold" value={editProductData.unit} onChange={(e) => setEditProductData({...editProductData, unit: e.target.value})} required>
+                            <select className="w-full p-5 bg-slate-50 rounded-2xl font-bold" value={editProductData.unit} onChange={(e: any) => setEditProductData({...editProductData, unit: e.target.value})} required>
                                 <option value="UNIT">Unités</option>
                                 <option value="KG">Kilogrammes</option>
                                 <option value="L">Litres</option>
@@ -851,27 +851,27 @@ export default function OwnerDashboard() {
                         </div>
                         <div>
                             <p className="text-[10px] font-black uppercase text-slate-400 mb-1 ml-1">Stock Actuel</p>
-                            <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold" type="number" onFocus={(e) => e.target.select()} value={editProductData.quantity} onChange={(e) => setEditProductData({...editProductData, quantity: e.target.value})} />
+                            <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold" type="number" onFocus={(e: any) => e.target.select()} value={editProductData.quantity} onChange={(e: any) => setEditProductData({...editProductData, quantity: e.target.value})} />
                         </div>
                         <div>
                             <p className="text-[10px] font-black uppercase text-slate-400 mb-1 ml-1">Prix Achat (DA)</p>
-                            <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold" type="number" onFocus={(e) => e.target.select()} value={editProductData.purchase_price} onChange={(e) => setEditProductData({...editProductData, purchase_price: e.target.value})} required />
+                            <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold" type="number" onFocus={(e: any) => e.target.select()} value={editProductData.purchase_price} onChange={(e: any) => setEditProductData({...editProductData, purchase_price: e.target.value})} required />
                         </div>
                         <div>
                             <p className="text-[10px] font-black uppercase text-slate-400 mb-1 ml-1">Prix Vente (DA)</p>
-                            <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold" type="number" onFocus={(e) => e.target.select()} value={editProductData.unit_price} onChange={(e) => setEditProductData({...editProductData, unit_price: e.target.value})} required />
+                            <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold" type="number" onFocus={(e: any) => e.target.select()} value={editProductData.unit_price} onChange={(e: any) => setEditProductData({...editProductData, unit_price: e.target.value})} required />
                         </div>
                         <div className="col-span-2">
                             <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-300 rounded-2xl cursor-pointer bg-slate-50 hover:bg-emerald-50 transition-all">
                                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                     <Camera className="w-8 h-8 mb-2 text-slate-400" />
-                                    <p className="text-sm text-slate-500 font-bold">{editProductData.image instanceof File ? editProductData.image.name : "Changer Photo"}</p>
+                                    <p className="text-sm text-slate-500 font-bold">{(editProductData.image as any) instanceof File ? (editProductData.image as any).name : "Changer Photo"}</p>
                                 </div>
-                                <input type="file" className="hidden" accept="image/*" onChange={(e) => setEditProductData({...editProductData, image: e.target.files[0]})} />
+                                <input type="file" className="hidden" accept="image/*" onChange={(e: any) => setEditProductData({...editProductData, image: e.target.files[0]})} />
                             </label>
                         </div>
                         <div className="col-span-2">
-                            <textarea className="w-full p-5 bg-slate-50 rounded-2xl font-bold text-sm" rows={4} value={editProductData.description} onChange={(e) => setEditProductData({...editProductData, description: e.target.value})} />
+                            <textarea className="w-full p-5 bg-slate-50 rounded-2xl font-bold text-sm" rows={4} value={editProductData.description} onChange={(e: any) => setEditProductData({...editProductData, description: e.target.value})} />
                         </div>
                         <button type="submit" className="col-span-2 py-5 bg-slate-900 text-white font-black rounded-2xl shadow-xl hover:bg-emerald-600 transition-all">Sauvegarder</button>
                     </form>
@@ -885,7 +885,16 @@ export default function OwnerDashboard() {
   )
 }
 
-function ModernNotification({ notification, onClose }: any) {
+interface ModernNotificationProps {
+  notification: {
+    message: string;
+    type: 'error' | 'success' | 'info' | 'confirm';
+    onConfirm?: () => void;
+  } | null;
+  onClose: () => void;
+}
+
+function ModernNotification({ notification, onClose }: ModernNotificationProps) {
   if (!notification) return null;
 
   const config = {
@@ -945,7 +954,14 @@ function ModernNotification({ notification, onClose }: any) {
   )
 }
 
-function TabButton({ active, onClick, label, icon }: any) {
+interface TabButtonProps {
+    active: boolean;
+    onClick: () => void;
+    label: string;
+    icon: React.ReactNode;
+}
+
+function TabButton({ active, onClick, label, icon }: TabButtonProps) {
     return (
         <button onClick={onClick} className={`px-4 md:px-10 py-3 md:py-5 rounded-xl md:rounded-[2rem] font-black text-xs md:text-sm flex items-center gap-2 md:gap-4 transition-all whitespace-nowrap active:scale-95 ${active ? 'bg-slate-900 text-white shadow-[0_10px_20px_-5px_rgba(0,0,0,0.2)] md:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] scale-105' : 'bg-white text-slate-400 hover:bg-emerald-50 hover:text-emerald-600 border border-slate-100'}`}>
             {icon} {label}
@@ -953,7 +969,16 @@ function TabButton({ active, onClick, label, icon }: any) {
     )
 }
 
-function InsightCard({ label, value, unit, status, icon, desc }: any) {
+interface InsightCardProps {
+    label: string;
+    value: string | number;
+    unit: string;
+    status: 'danger' | 'success' | 'info';
+    icon: React.ReactElement<any>;
+    desc: string;
+}
+
+function InsightCard({ label, value, unit, status, icon, desc }: InsightCardProps) {
   const colors = { 
     danger: 'text-rose-600 bg-rose-50 border-rose-100', 
     success: 'text-emerald-600 bg-emerald-50 border-emerald-100', 
@@ -961,12 +986,12 @@ function InsightCard({ label, value, unit, status, icon, desc }: any) {
   }
   return (
     <div className={`bg-white p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border ${colors[status as keyof typeof colors] || colors.info} shadow-xl relative overflow-hidden group hover:scale-[1.02] md:hover:scale-[1.05] transition-all duration-500`}>
-      <div className={`w-12 h-12 md:w-16 md:h-16 ${colors[status as keyof typeof colors].split(' ')[1]} rounded-xl md:rounded-[1.5rem] flex items-center justify-center mb-4 md:mb-6`}>{React.cloneElement(icon, { size: 24 })}</div>
+      <div className={`w-12 h-12 md:w-16 md:h-16 ${colors[status as keyof typeof colors].split(' ')[1]} rounded-xl md:rounded-[1.5rem] flex items-center justify-center mb-4 md:mb-6`}>{React.cloneElement(icon as React.ReactElement<any>, { size: 24 })}</div>
       <p className="text-slate-400 text-[9px] md:text-[11px] font-black uppercase mb-1 md:mb-2 tracking-[0.1em]">{label}</p>
       <div className={`text-2xl md:text-4xl font-black tracking-tight ${(colors[status as keyof typeof colors] || colors.info).split(' ')[0]}`}>{value} <small className="text-[10px] md:text-sm font-black opacity-30 uppercase">{unit}</small></div>
       <p className="mt-4 md:mt-6 text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">{desc}</p>
       <div className="absolute top-0 right-0 p-2 md:p-4 opacity-5 group-hover:opacity-20 transition-opacity">
-        {React.cloneElement(icon, { size: 80 })}
+        {React.cloneElement(icon as React.ReactElement<any>, { size: 80 })}
       </div>
     </div>
   )
