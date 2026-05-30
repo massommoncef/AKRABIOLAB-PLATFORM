@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import { API_BASE_URL } from '@/lib/api'
 import { 
   Users, TrendingUp, AlertCircle, CheckCircle2, Phone, Building2,
   ArrowLeft, DollarSign, Plus, X, Download, ShoppingBag, Save,
@@ -80,11 +81,11 @@ export default function OwnerDashboard() {
     try {
       const headers = { 'Authorization': `Bearer ${token}` };
       const [cRes, oRes, pRes, mRes, catRes] = await Promise.all([
-        fetch('http://127.0.0.1:8000/api/finance/clients/', { headers }),
-        fetch('http://127.0.0.1:8000/api/orders/list/', { headers }),
-        fetch('http://127.0.0.1:8000/api/products/items/', { headers }),
-        fetch('http://127.0.0.1:8000/api/inventory/materials/', { headers }),
-        fetch('http://127.0.0.1:8000/api/products/categories/', { headers })
+        fetch(`${API_BASE_URL}/api/finance/clients/`, { headers }),
+        fetch(`${API_BASE_URL}/api/orders/list/`, { headers }),
+        fetch(`${API_BASE_URL}/api/products/items/`, { headers }),
+        fetch(`${API_BASE_URL}/api/inventory/materials/`, { headers }),
+        fetch(`${API_BASE_URL}/api/products/categories/`, { headers })
       ]);
 
       if (cRes.status === 401) {
@@ -132,7 +133,7 @@ export default function OwnerDashboard() {
   const handleDeliverOrder = async (orderId: string | number) => {
     const token = localStorage.getItem('akrabiolab_access');
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/orders/list/${orderId}/`, {
+      const res = await fetch(`${API_BASE_URL}/api/orders/list/${orderId}/`, {
           method: 'PATCH',
           headers: { 
             'Content-Type': 'application/json',
@@ -142,8 +143,8 @@ export default function OwnerDashboard() {
       });
       if (res.ok) {
           await fetchData();
-          window.open(`http://127.0.0.1:8000/api/orders/download-invoice/${orderId}/`, '_blank');
-          setTimeout(() => window.open(`http://127.0.0.1:8000/api/orders/download-bl/${orderId}/`, '_blank'), 500);
+          window.open(`${API_BASE_URL}/api/orders/download-invoice/${orderId}/`, '_blank');
+          setTimeout(() => window.open(`${API_BASE_URL}/api/orders/download-bl/${orderId}/`, '_blank'), 500);
       }
     } catch (err) { console.error("Deliver error:", err) }
   }
@@ -153,7 +154,7 @@ export default function OwnerDashboard() {
     const token = localStorage.getItem('akrabiolab_access');
     try {
       const newQty = (selectedMaterial as any).quantity + parseFloat(stockAddAmount as any);
-      const res = await fetch(`http://127.0.0.1:8000/api/inventory/materials/${(selectedMaterial as any).id}/`, {
+      const res = await fetch(`${API_BASE_URL}/api/inventory/materials/${(selectedMaterial as any).id}/`, {
           method: 'PATCH',
           headers: { 
             'Content-Type': 'application/json',
@@ -173,7 +174,7 @@ export default function OwnerDashboard() {
     const token = localStorage.getItem('akrabiolab_access');
     try {
       const newQty = parseFloat((selectedProduct as any).quantity) + parseFloat(stockAddAmount as any);
-      const res = await fetch(`http://127.0.0.1:8000/api/products/items/${(selectedProduct as any).id}/`, {
+      const res = await fetch(`${API_BASE_URL}/api/products/items/${(selectedProduct as any).id}/`, {
           method: 'PATCH',
           headers: { 
             'Content-Type': 'application/json',
@@ -202,7 +203,7 @@ export default function OwnerDashboard() {
     if (newProduct.image) formData.append('image', newProduct.image);
 
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/products/items/', {
+      const res = await fetch(`${API_BASE_URL}/api/products/items/`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
@@ -231,7 +232,7 @@ export default function OwnerDashboard() {
     }
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/products/items/${editProductData.id}/`, {
+      const res = await fetch(`${API_BASE_URL}/api/products/items/${editProductData.id}/`, {
           method: 'PATCH',
           headers: { 'Authorization': `Bearer ${token}` },
           body: formData
@@ -247,7 +248,7 @@ export default function OwnerDashboard() {
     if (confirm("Supprimer définitivement ce produit du catalogue ?")) {
       const token = localStorage.getItem('akrabiolab_access');
       try {
-        const res = await fetch(`http://127.0.0.1:8000/api/products/items/${productId}/`, { 
+        const res = await fetch(`${API_BASE_URL}/api/products/items/${productId}/`, { 
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -260,7 +261,7 @@ export default function OwnerDashboard() {
     if (e) e.preventDefault();
     const token = localStorage.getItem('akrabiolab_access');
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/orders/list/', {
+      const res = await fetch(`${API_BASE_URL}/api/orders/list/`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -303,7 +304,7 @@ export default function OwnerDashboard() {
     e.preventDefault()
     const token = localStorage.getItem('akrabiolab_access');
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/finance/clients/', {
+      const res = await fetch(`${API_BASE_URL}/api/finance/clients/`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -326,8 +327,16 @@ export default function OwnerDashboard() {
   const handleAddPayment = async (e: React.FormEvent) => {
     e.preventDefault()
     const token = localStorage.getItem('akrabiolab_access');
+    const client = clients.find((c: any) => c.id === newPayment.client);
+    const balance = client ? parseFloat(client.total_debt) - parseFloat(client.total_paid) : 0;
+
+    if (parseFloat(newPayment.amount as any) > balance) {
+        showMsg(`Le montant (${newPayment.amount} DA) dépasse la dette actuelle (${balance} DA).`, 'error');
+        return;
+    }
+
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/finance/payments/', {
+      const res = await fetch(`${API_BASE_URL}/api/finance/payments/`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -335,11 +344,18 @@ export default function OwnerDashboard() {
         },
         body: JSON.stringify(newPayment)
       })
+      const data = await res.json();
       if (res.ok) { 
         setShowPaymentModal(false); 
+        showMsg("Paiement enregistré avec succès", "success");
         await fetchData(); 
+      } else {
+        showMsg(data.detail || "Erreur lors de l'enregistrement du paiement", "error");
       }
-    } catch (err) { console.error("Payment error:", err) }
+    } catch (err) { 
+        console.error("Payment error:", err);
+        showMsg("Erreur de connexion au serveur", "error");
+    }
   }
 
   const handleDeleteOrder = async (order: any) => {
@@ -352,7 +368,7 @@ export default function OwnerDashboard() {
     if (confirm(message)) {
       const token = localStorage.getItem('akrabiolab_access');
       try {
-        const res = await fetch(`http://127.0.0.1:8000/api/orders/list/${order.id}/`, { 
+        const res = await fetch(`${API_BASE_URL}/api/orders/list/${order.id}/`, { 
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -392,7 +408,7 @@ export default function OwnerDashboard() {
   const renderProductImage = (img: string | null) => {
     if (!img) return '/images/akrabilab-logo.png';
     if (img.startsWith('http')) return img;
-    return `http://127.0.0.1:8000${img}`;
+    return `${API_BASE_URL}${img}`;
   }
 
   return (
@@ -541,8 +557,8 @@ export default function OwnerDashboard() {
                                     <td className="px-6 md:px-10 py-6 md:py-8 font-black text-emerald-700 text-base md:text-lg">{parseFloat(order.total_amount_ttc).toLocaleString()} DA</td>
                                     <td className="px-6 md:px-10 py-6 md:py-8 text-center">
                                         <div className="flex justify-center gap-2 md:gap-3">
-                                            <a href={`http://127.0.0.1:8000/api/orders/download-invoice/${order.id}/`} target="_blank" className="p-2 md:p-3 bg-slate-900 text-white rounded-lg md:rounded-xl shadow-lg hover:scale-105 transition-all" title="Facture"><Download size={16}/></a>
-                                            <a href={`http://127.0.0.1:8000/api/orders/download-bl/${order.id}/`} target="_blank" className="p-2 md:p-3 bg-emerald-600 text-white rounded-lg md:rounded-xl shadow-lg hover:scale-105 transition-all" title="Bon de Livraison"><Truck size={16}/></a>
+                                            <a href={`${API_BASE_URL}/api/orders/download-invoice/${order.id}/`} target="_blank" className="p-2 md:p-3 bg-slate-900 text-white rounded-lg md:rounded-xl shadow-lg hover:scale-105 transition-all" title="Facture"><Download size={16}/></a>
+                                            <a href={`${API_BASE_URL}/api/orders/download-bl/${order.id}/`} target="_blank" className="p-2 md:p-3 bg-emerald-600 text-white rounded-lg md:rounded-xl shadow-lg hover:scale-105 transition-all" title="Bon de Livraison"><Truck size={16}/></a>
                                         </div>
                                     </td>
                                     <td className="px-6 md:px-10 py-6 md:py-8 text-center"><button onClick={() => handleDeleteOrder(order)} className="p-2 md:p-3 bg-rose-50 text-rose-600 rounded-lg md:rounded-xl hover:bg-rose-600 hover:text-white transition-all"><Trash2 size={16}/></button></td>
@@ -621,7 +637,20 @@ export default function OwnerDashboard() {
                                 <tr key={client.id} className="hover:bg-slate-50/50 transition-colors">
                                     <td className="px-6 md:px-10 py-6 md:py-8"><div className="font-black text-slate-800 text-base md:text-lg">{client.name}</div><div className="text-[10px] md:text-xs text-slate-400 font-bold">{client.phone}</div></td>
                                     <td className="px-6 md:px-10 py-6 md:py-8 font-black text-rose-600 text-lg md:text-xl">{(parseFloat(client.total_debt) - parseFloat(client.total_paid)).toLocaleString()} DA</td>
-                                    <td className="px-6 md:px-10 py-6 md:py-8 text-center"><button onClick={() => {setNewPayment({...newPayment, client: client.id}); setShowPaymentModal(true);}} className="p-3 md:p-4 bg-emerald-600 text-white rounded-xl md:rounded-2xl shadow-xl hover:scale-105 transition-all"><DollarSign size={20}/></button></td>
+                                    <td className="px-6 md:px-10 py-6 md:py-8 text-center">
+                                        <button 
+                                            onClick={() => {setNewPayment({...newPayment, client: client.id}); setShowPaymentModal(true);}} 
+                                            disabled={(parseFloat(client.total_debt) - parseFloat(client.total_paid)) <= 0}
+                                            className={`p-3 md:p-4 rounded-xl md:rounded-2xl shadow-xl transition-all ${
+                                                (parseFloat(client.total_debt) - parseFloat(client.total_paid)) <= 0 
+                                                ? 'bg-slate-100 text-slate-300 cursor-not-allowed' 
+                                                : 'bg-emerald-600 text-white hover:scale-105 shadow-emerald-200'
+                                            }`}
+                                            title={(parseFloat(client.total_debt) - parseFloat(client.total_paid)) <= 0 ? "Aucune dette à encaisser" : "Encaisser un paiement"}
+                                        >
+                                            <DollarSign size={20}/>
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>

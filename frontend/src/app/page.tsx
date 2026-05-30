@@ -7,6 +7,7 @@ import {
   Star, Menu, X, ArrowUpRight, ArrowRight
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { API_BASE_URL } from '@/lib/api'
 
 export default function ClientLanding() {
   const [products, setProducts] = useState<any[]>([])
@@ -22,7 +23,7 @@ export default function ClientLanding() {
 
     const fetchProducts = async () => {
       try {
-        const res = await fetch('http://127.0.0.1:8000/api/products/items/', { signal: controller.signal })     
+        const res = await fetch(`${API_BASE_URL}/api/products/items/`, { signal: controller.signal })     
         const data = await res.json()
         if (Array.isArray(data)) setProducts(data)
       } catch (err: any) {
@@ -43,7 +44,7 @@ export default function ClientLanding() {
   const renderProductImage = useCallback((img: string | null) => {
     if (!img) return '/images/akrabilab-logo.png';
     if (img.startsWith('http')) return img;
-    return `http://127.0.0.1:8000${img}`;
+    return `${API_BASE_URL}${img}`;
   }, [])
 
   const scrollToSection = (id: string) => {
