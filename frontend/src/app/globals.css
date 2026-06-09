@@ -18,56 +18,24 @@ body {
   overflow-x: hidden;
 }
 
-/* Modern & Beautiful Scrollbar */
+/* Hide Scrollbar but keep functionality */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  display: none;
 }
 
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 10px;
-  border: 2px solid #f1f5f9;
-  transition: all 0.3s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* For Firefox */
 * {
-  scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 #f1f5f9;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
-/* Custom animated scrollbar for modals and containers */
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: #10b981 #f1f5f9;
+/* For specific containers if needed */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #10b981;
-  border-radius: 20px;
-  border: 1px solid transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #059669;
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Animated selection */

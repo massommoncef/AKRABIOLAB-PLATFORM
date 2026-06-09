@@ -51,7 +51,7 @@ export default function ClientLanding() {
     setIsMobileMenuOpen(false)
     const element = document.getElementById(id);
     if (element) {
-        const offset = 80;
+        const offset = 20;
         const bodyRect = document.body.getBoundingClientRect().top;
         const elementRect = element.getBoundingClientRect().top;
         window.scrollTo({ top: (elementRect - bodyRect) - offset, behavior: 'smooth' });
