@@ -168,18 +168,23 @@ export default function ClientLanding() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.05 }}
-                    className="group flex flex-col bg-white border border-slate-100 rounded-3xl overflow-hidden hover:border-emerald-500 hover:shadow-2xl transition-all duration-500"
+                    className="group flex flex-col bg-white border border-slate-100 rounded-[2.5rem] overflow-hidden hover:border-orange-200 hover:shadow-2xl transition-all duration-500"
                 >
-                    <div className="aspect-[4/5] relative bg-slate-50 overflow-hidden flex items-center justify-center p-12">
-                        <img src={renderProductImage(p.image)} className={`w-full h-full group-hover:scale-110 transition-transform duration-700 ${p.image ? 'object-cover rounded-2xl' : 'object-contain opacity-10'}`} alt={p.name} />
-                        <div className="absolute bottom-6 left-6 right-6 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                    <div className="aspect-[4/5] relative bg-slate-50 overflow-hidden">
+                        <img src={renderProductImage(p.image)} className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ${p.image ? '' : 'p-16 opacity-10'}`} alt={p.name} />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                        <div className="absolute bottom-6 left-6 right-6 translate-y-[120%] group-hover:translate-y-0 transition-transform duration-500 z-10">
                              <div className="bg-white/90 backdrop-blur p-4 rounded-xl shadow-lg border border-white text-center">
-                                <span className="text-[8px] font-black uppercase tracking-widest text-emerald-600">Disponibilité immédiate</span>
+                                <span className="text-[8px] font-black uppercase tracking-widest text-orange-600">Pureté Akrabiolab</span>
                              </div>
                         </div>
                     </div>
                     <div className="p-8 flex flex-col flex-1">
-                        <h3 className="text-xl font-black uppercase tracking-tighter leading-none mb-4">{p.name}</h3>
+                        <div className="flex items-center gap-2 mb-4">
+                            <div className="h-1 w-6 bg-orange-500 rounded-full"></div>
+                            <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">Certification Lab</span>
+                        </div>
+                        <h3 className="text-xl font-black uppercase tracking-tighter leading-none mb-4 group-hover:text-orange-600 transition-colors">{p.name}</h3>
                         <p className="text-xs text-slate-400 font-medium leading-relaxed mb-8 line-clamp-2 italic">{p.description}</p>
                         <div className="mt-auto pt-6 border-t border-slate-50 flex items-center justify-between">
                             <div>
