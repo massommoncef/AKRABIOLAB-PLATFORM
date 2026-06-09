@@ -82,7 +82,7 @@ export default function OwnerDashboard() {
       const [cRes, oRes, pRes, mRes] = await Promise.all([
         fetch(`${API_BASE_URL}/api/finance/clients/`, { headers }),
         fetch(`${API_BASE_URL}/api/orders/list/`, { headers }),
-        fetch(`${API_BASE_URL}/api/products/items/`, { headers }),
+        fetch(`${API_BASE_URL}/api/products/`, { headers }),
         fetch(`${API_BASE_URL}/api/inventory/materials/`, { headers })
       ]);
 
@@ -92,12 +92,21 @@ export default function OwnerDashboard() {
         return;
       }
 
-      setClients(await cRes.json());
-      setOrders(await oRes.json());
-      setProducts(await pRes.json());
-      setMaterials(await mRes.json());
+      const cData = await cRes.json();
+      const oData = await oRes.json();
+      const pData = await pRes.json();
+      const mData = await mRes.json();
+
+      setClients(Array.isArray(cData) ? cData : []);
+      setOrders(Array.isArray(oData) ? oData : []);
+      setProducts(Array.isArray(pData) ? pData : []);
+      setMaterials(Array.isArray(mData) ? mData : []);
     } catch(err) { 
       console.error(err);
+      setClients([]);
+      setOrders([]);
+      setProducts([]);
+      setMaterials([]);
     } finally {
       setIsLoading(false);
     }
