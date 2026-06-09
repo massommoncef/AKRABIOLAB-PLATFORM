@@ -7,37 +7,15 @@ import { API_BASE_URL } from '@/lib/api'
 import { 
   Users, TrendingUp, AlertCircle, CheckCircle2, Phone, Building2,
   ArrowLeft, DollarSign, Plus, X, Download, ShoppingBag, Save,
-  Search, Edit, Trash2, Filter, Truck, Calendar, UserPlus, Info, Check, Package, Layers, Camera, ArrowRight, LogOut, Moon, Sun
+  Search, Edit, Trash2, Filter, Truck, Calendar, UserPlus, Info, Check, Package, Layers, Camera, ArrowRight, LogOut
 } from 'lucide-react'
 
 export default function OwnerDashboard() {
-  const [isDarkMode, setIsDarkMode] = useState(false)
   const [clients, setClients] = useState<any[]>([])
   const [orders, setOrders] = useState<any[]>([])
   const [products, setProducts] = useState<any[]>([])
   const [materials, setMaterials] = useState<any[]>([])
   const [activeTab, setActiveTab] = useState('overview')
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('akrabiolab_theme');
-    if (savedTheme === 'dark') {
-      setIsDarkMode(true);
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
-
-  const toggleDarkMode = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    if (newMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('akrabiolab_theme', 'dark');
-    } else {
-      document.documentElement.classList.add('dark'); // To be sure
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('akrabiolab_theme', 'light');
-    }
-  };
   
   const [clientSearch, setClientSearch] = useState('')
   const [orderSearch, setOrderSearch] = useState('')
@@ -451,22 +429,19 @@ export default function OwnerDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-background font-sans text-foreground pb-20 selection:bg-emerald-100 selection:text-emerald-900 transition-colors duration-300">
-      <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 px-4 md:px-8 py-5 sticky top-0 z-50 flex flex-col md:flex-row items-center justify-between shadow-sm gap-4 transition-colors duration-300">
+    <main className="min-h-screen bg-[#f1f5f9] font-sans text-slate-900 pb-20 selection:bg-emerald-100 selection:text-emerald-900">
+      <div className="bg-white/80 backdrop-blur-xl border-b border-slate-200 px-4 md:px-8 py-5 sticky top-0 z-50 flex flex-col md:flex-row items-center justify-between shadow-sm gap-4">
         <div className="flex items-center justify-between w-full md:w-auto gap-4 md:gap-8">
           <a href="/" className="text-slate-400 hover:text-emerald-600 font-bold text-xs md:text-sm flex items-center gap-1 transition-colors"><ArrowLeft size={16}/> Site Public</a>
           <div className="flex items-center gap-2 md:gap-4">
-            <img src="/images/akrabilab-logo.png" alt="Logo" className="h-8 md:h-12 w-auto dark:brightness-110" />
-            <div className="h-6 md:h-8 w-px bg-slate-200 dark:bg-slate-700"></div>
+            <img src="/images/akrabilab-logo.png" alt="Logo" className="h-8 md:h-12 w-auto" />
+            <div className="h-6 md:h-8 w-px bg-slate-200"></div>
             <h1 className="text-sm md:text-xl font-black uppercase tracking-tighter truncate">Akrabiolab <span className="text-emerald-600 hidden xs:inline">Pro-Panel</span></h1>
           </div>
         </div>
         <div className="flex items-center gap-3 md:gap-4 w-full md:w-auto">
-          <button onClick={toggleDarkMode} className="p-3 md:p-4 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-xl md:rounded-2xl hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 transition-all flex-shrink-0">
-            {isDarkMode ? <Sun size={20}/> : <Moon size={20}/>}
-          </button>
-          <button onClick={handleLogout} className="p-3 md:p-4 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-xl md:rounded-2xl hover:bg-rose-50 dark:hover:bg-rose-900/30 hover:text-rose-600 transition-all flex-shrink-0"><LogOut size={20}/></button>
-          <button onClick={() => { setWizardStep(1); setShowOrderModal(true); }} className="flex-1 md:flex-none px-4 md:px-8 py-3 md:py-4 bg-orange-500 text-white font-black rounded-xl md:rounded-2xl hover:bg-orange-600 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-200 dark:shadow-none transition-all flex items-center justify-center gap-2 text-xs md:text-base"><Truck size={20}/> <span className="hidden sm:inline">Nouvelle Commande</span><span className="sm:hidden">Commander</span></button>
+          <button onClick={handleLogout} className="p-3 md:p-4 bg-slate-100 text-slate-500 rounded-xl md:rounded-2xl hover:bg-rose-50 hover:text-rose-600 transition-all flex-shrink-0"><LogOut size={20}/></button>
+          <button onClick={() => { setWizardStep(1); setShowOrderModal(true); }} className="flex-1 md:flex-none px-4 md:px-8 py-3 md:py-4 bg-orange-500 text-white font-black rounded-xl md:rounded-2xl hover:bg-orange-600 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-orange-200 transition-all flex items-center justify-center gap-2 text-xs md:text-base"><Truck size={20}/> <span className="hidden sm:inline">Nouvelle Commande</span><span className="sm:hidden">Commander</span></button>
         </div>
       </div>
 
@@ -1026,7 +1001,7 @@ interface TabButtonProps {
 
 function TabButton({ active, onClick, label, icon }: TabButtonProps) {
     return (
-        <button onClick={onClick} className={`px-4 md:px-10 py-3 md:py-5 rounded-xl md:rounded-[2rem] font-black text-xs md:text-sm flex items-center gap-2 md:gap-4 transition-all whitespace-nowrap active:scale-95 ${active ? 'bg-slate-900 dark:bg-emerald-600 text-white shadow-[0_10px_20px_-5px_rgba(0,0,0,0.2)] md:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] scale-105' : 'bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-500 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-600 dark:hover:text-emerald-400 border border-slate-100 dark:border-slate-800'}`}>
+        <button onClick={onClick} className={`px-4 md:px-10 py-3 md:py-5 rounded-xl md:rounded-[2rem] font-black text-xs md:text-sm flex items-center gap-2 md:gap-4 transition-all whitespace-nowrap active:scale-95 ${active ? 'bg-slate-900 text-white shadow-[0_10px_20px_-5px_rgba(0,0,0,0.2)] md:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] scale-105' : 'bg-white text-slate-400 hover:bg-emerald-50 hover:text-emerald-600 border border-slate-100'}`}>
             {icon} {label}
         </button>
     )
@@ -1043,16 +1018,16 @@ interface InsightCardProps {
 
 function InsightCard({ label, value, unit, status, icon, desc }: InsightCardProps) {
   const colors = { 
-    danger: 'text-rose-600 bg-rose-50 border-rose-100 dark:bg-rose-950/20 dark:border-rose-900/50', 
-    success: 'text-emerald-600 bg-emerald-50 border-emerald-100 dark:bg-emerald-950/20 dark:border-emerald-900/50', 
-    info: 'text-orange-600 bg-orange-50 border-orange-100 dark:bg-orange-950/20 dark:border-orange-900/50' 
+    danger: 'text-rose-600 bg-rose-50 border-rose-100', 
+    success: 'text-emerald-600 bg-emerald-50 border-emerald-100', 
+    info: 'text-orange-600 bg-orange-50 border-orange-100' 
   }
   return (
-    <div className={`p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border ${colors[status as keyof typeof colors] || colors.info} bg-white dark:bg-slate-900 shadow-xl relative overflow-hidden group hover:scale-[1.02] md:hover:scale-[1.05] transition-all duration-500`}>
+    <div className={`bg-white p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border ${colors[status as keyof typeof colors] || colors.info} shadow-xl relative overflow-hidden group hover:scale-[1.02] md:hover:scale-[1.05] transition-all duration-500`}>
       <div className={`w-12 h-12 md:w-16 md:h-16 ${colors[status as keyof typeof colors].split(' ')[1]} rounded-xl md:rounded-[1.5rem] flex items-center justify-center mb-4 md:mb-6`}>{React.cloneElement(icon as React.ReactElement<any>, { size: 24 })}</div>
-      <p className="text-slate-400 dark:text-slate-500 text-[9px] md:text-[11px] font-black uppercase mb-1 md:mb-2 tracking-[0.1em]">{label}</p>
+      <p className="text-slate-400 text-[9px] md:text-[11px] font-black uppercase mb-1 md:mb-2 tracking-[0.1em]">{label}</p>
       <div className={`text-2xl md:text-4xl font-black tracking-tight ${(colors[status as keyof typeof colors] || colors.info).split(' ')[0]}`}>{value} <small className="text-[10px] md:text-sm font-black opacity-30 uppercase">{unit}</small></div>
-      <p className="mt-4 md:mt-6 text-[8px] md:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{desc}</p>
+      <p className="mt-4 md:mt-6 text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">{desc}</p>
       <div className="absolute top-0 right-0 p-2 md:p-4 opacity-5 group-hover:opacity-20 transition-opacity">
         {React.cloneElement(icon as React.ReactElement<any>, { size: 80 })}
       </div>
