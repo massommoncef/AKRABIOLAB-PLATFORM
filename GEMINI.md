@@ -10,6 +10,16 @@ Open a terminal in the `backend` folder:
 python manage.py runserver 0.0.0.0:8000
 ```
 
+#### Sync Data (Collaborators)
+To see the same products and orders as the team:
+```bash
+python manage.py loaddata initial_data.json
+```
+
+## Admin Credentials
+- **Username:** `akrabiolab`
+- **Password:** `Go10156606.`
+
 ### 2. Frontend (Next.js)
 Open another terminal in the `frontend` folder:
 ```bash
