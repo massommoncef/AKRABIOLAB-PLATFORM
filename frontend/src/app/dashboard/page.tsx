@@ -587,15 +587,15 @@ export default function OwnerDashboard() {
         )}
 
         {activeTab === 'products' && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-white rounded-[2rem] md:rounded-[3.5rem] border border-slate-200 shadow-xl overflow-hidden">
-                <div className="p-6 md:p-10 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-6">
-                    <h3 className="text-lg md:text-2xl font-black uppercase tracking-tighter">Catalogue Produits</h3>
-                    <button onClick={() => setShowProductModal(true)} className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 bg-orange-500 text-white font-black rounded-xl md:rounded-2xl shadow-xl hover:bg-orange-600 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 text-xs md:text-base"><Plus size={20}/> Nouveau Produit</button>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-white rounded-[2rem] md:rounded-[3rem] border border-slate-200 shadow-xl overflow-hidden">
+                <div className="p-6 md:p-8 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-6">
+                    <h3 className="text-lg md:text-xl font-black uppercase tracking-tighter">Catalogue Produits</h3>
+                    <button onClick={() => setShowProductModal(true)} className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 bg-orange-500 text-white font-black rounded-xl md:rounded-2xl shadow-xl hover:bg-orange-600 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 text-xs md:text-sm"><Plus size={18}/> Nouveau Produit</button>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 p-6 md:p-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 p-6 md:p-8">
                     {(products as any[]).map((product: any) => (
-                        <div key={product.id} className="group bg-slate-50 rounded-[2rem] md:rounded-[3rem] overflow-hidden border border-slate-100 hover:bg-white hover:shadow-2xl transition-all relative">
-                            <div className="h-40 md:h-48 overflow-hidden relative">
+                        <div key={product.id} className="group bg-slate-50 rounded-[2rem] md:rounded-[2.5rem] overflow-hidden border border-slate-100 hover:bg-white hover:shadow-2xl transition-all relative">
+                            <div className="h-40 md:h-44 overflow-hidden relative">
                                 <img src={renderProductImage(product.image)} alt={product.name} className={`w-full h-full ${product.image ? 'object-cover' : 'object-contain p-8 opacity-20'} group-hover:scale-110 transition-transform duration-500`} />
                                 <div className="absolute top-4 right-4 flex gap-2">
                                     <button onClick={() => { 
@@ -610,24 +610,20 @@ export default function OwnerDashboard() {
                                             unit: product.unit
                                         });
                                         setShowEditProductModal(true); 
-                                    }} className="p-2 md:p-3 bg-white/90 backdrop-blur text-emerald-600 rounded-xl md:rounded-2xl shadow-xl hover:bg-emerald-600 hover:text-white transition-all"><Edit size={16}/></button>
-                                    <button onClick={() => handleDeleteProduct(product.id)} className="p-2 md:p-3 bg-white/90 backdrop-blur text-rose-600 rounded-xl md:rounded-2xl shadow-xl hover:bg-rose-600 hover:text-white transition-all"><Trash2 size={16}/></button>
+                                    }} className="p-2 bg-white/90 backdrop-blur text-emerald-600 rounded-xl shadow-lg hover:bg-emerald-600 hover:text-white transition-all"><Edit size={14}/></button>
+                                    <button onClick={() => handleDeleteProduct(product.id)} className="p-2 bg-white/90 backdrop-blur text-rose-600 rounded-xl shadow-lg hover:bg-rose-600 hover:text-white transition-all"><Trash2 size={14}/></button>
                                 </div>
                             </div>
-                            <div className="p-6 md:p-8">
-                                <div className="flex justify-between items-start mb-4">
+                            <div className="p-5 md:p-6">
+                                <h4 className="text-sm md:text-base font-black text-slate-800 leading-tight mb-4">{product.name}</h4>
+                                <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-200/50">
                                     <div>
-                                        <h4 className="text-base md:text-xl font-black text-slate-800 leading-tight">{product.name}</h4>
-                                    </div>
-                                </div>
-                                <div className="flex items-center justify-between mt-4 md:mt-6 pt-4 md:pt-6 border-t border-slate-200/50">
-                                    <div>
-                                        <p className="text-[9px] md:text-[10px] font-black uppercase text-slate-400">Prix Public</p>
-                                        <p className="text-lg md:text-2xl font-black text-slate-900">{parseFloat(product.unit_price).toLocaleString()} <small className="text-[10px] md:text-xs font-medium opacity-50">DA</small></p>
+                                        <p className="text-[8px] font-black uppercase text-slate-400">Vente</p>
+                                        <p className="text-sm md:text-lg font-black text-slate-900">{parseFloat(product.unit_price).toLocaleString()} <small className="text-[9px] font-medium opacity-50">DA</small></p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-[9px] md:text-[10px] font-black uppercase text-slate-400">Coût</p>
-                                        <p className="text-xs md:text-sm font-bold text-orange-500">{parseFloat(product.purchase_price).toLocaleString()} DA</p>
+                                        <p className="text-[8px] font-black uppercase text-slate-400">Coût</p>
+                                        <p className="text-[10px] md:text-xs font-bold text-orange-500">{parseFloat(product.purchase_price).toLocaleString()} DA</p>
                                     </div>
                                 </div>
                             </div>
@@ -871,7 +867,7 @@ export default function OwnerDashboard() {
 
         {showEditProductModal && editProductData && (
             <div className="fixed inset-0 z-[140] flex items-center justify-center p-8 bg-slate-900/60 backdrop-blur-md">
-                <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="bg-white w-full max-w-2xl rounded-[3rem] p-12 shadow-2xl relative overflow-y-auto max-h-[90vh]">
+                <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="bg-white w-full max-w-2xl rounded-[3rem] p-12 shadow-2xl relative overflow-y-auto max-h-[90vh] custom-scrollbar">
                     <button onClick={() => setShowEditProductModal(false)} className="absolute top-10 right-10 p-2 hover:bg-slate-100 rounded-full text-slate-400"><X/></button>
                     <h2 className="text-3xl font-black mb-10 text-center uppercase tracking-tighter">Modifier Produit</h2>
                     <form onSubmit={handleUpdateProduct} className="grid grid-cols-2 gap-6">
