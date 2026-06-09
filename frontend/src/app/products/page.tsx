@@ -54,6 +54,20 @@ export default function FullCatalog() {
     return `${API_BASE_URL}${img}`;
   }, [])
 
+  const [clickCount, setClickCount] = useState(0)
+  
+  useEffect(() => {
+    if (clickCount === 3) {
+      router.push('/admin-login')
+      setClickCount(0)
+    }
+  }, [clickCount, router])
+
+  const handleLogoClick = () => {
+    setClickCount(prev => prev + 1)
+    setTimeout(() => setClickCount(0), 2000)
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#f0f4f5] flex items-center justify-center">
@@ -75,13 +89,20 @@ export default function FullCatalog() {
       {/* Header */}
       <nav className="sticky top-0 z-[100] bg-white/80 backdrop-blur-xl border-b border-slate-200/50 py-6">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-6">
-            <button onClick={() => router.push('/')} className="flex items-center gap-3 text-slate-500 hover:text-emerald-600 font-black uppercase tracking-widest text-[10px] transition-all group">
-                <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform"/> RETOUR ACCUEIL
-            </button>
+            <div className="flex items-center gap-8">
+                <button onClick={() => router.push('/')} className="flex items-center gap-3 text-slate-500 hover:text-emerald-600 font-black uppercase tracking-widest text-[10px] transition-all group">
+                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform"/> ACCUEIL
+                </button>
+                <div className="h-4 w-px bg-slate-200"></div>
+                <div className="flex items-center gap-3 cursor-pointer group" onClick={handleLogoClick}>
+                    <img src="/images/akrabilab-logo.png" alt="Logo" className="h-8 md:h-10 w-auto transition-transform group-active:scale-90" />
+                    <span className="text-lg font-black tracking-tighter text-slate-800 uppercase">AKRABIOLAB</span>
+                </div>
+            </div>
             
             <div className="flex flex-col items-center leading-none">
                 <span className="text-xl font-black tracking-tighter text-slate-800 uppercase">CATALOGUE COMPLET</span>
-                <span className="text-[8px] font-bold text-emerald-600 uppercase tracking-[0.3em] mt-1">Laboratoire Akrabiolab</span>
+                <span className="text-[8px] font-bold text-emerald-600 uppercase tracking-[0.3em] mt-1">Sidi Moussa — Alger</span>
             </div>
 
             <div className="w-full md:w-auto flex items-center gap-4">

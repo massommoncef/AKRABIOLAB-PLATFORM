@@ -52,10 +52,24 @@ export default function ClientLanding() {
     }
   }
 
+  const [clickCount, setClickCount] = useState(0)
+  
+  useEffect(() => {
+    if (clickCount === 3) {
+      router.push('/admin-login')
+      setClickCount(0)
+    }
+  }, [clickCount, router])
+
+  const handleLogoClick = () => {
+    setClickCount(prev => prev + 1)
+    setTimeout(() => setClickCount(0), 2000)
+  }
+
   return (
-    <main className="min-h-screen bg-[#f0f4f5] text-slate-900 font-sans selection:bg-emerald-600 selection:text-white overflow-x-hidden relative">
+    <main className="min-h-screen bg-[#f1f4f5] text-slate-900 font-sans selection:bg-emerald-600 selection:text-white overflow-x-hidden relative">
       
-      {/* Intense Cinematic Atmospheric Background */}
+      {/* Precision Atmospheric Background */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute top-[-10%] right-[-10%] w-full h-full bg-[radial-gradient(circle_at_80%_20%,#ffedd5_0%,transparent_50%)] opacity-100"></div>
         <div className="absolute bottom-[-10%] left-[-10%] w-full h-full bg-[radial-gradient(circle_at_20%_80%,#dcfce7_0%,transparent_50%)] opacity-90"></div>
@@ -67,8 +81,8 @@ export default function ClientLanding() {
       {/* Precision Navigation */}
       <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 border-b ${isScrolled ? 'bg-white/95 backdrop-blur-md py-4 border-slate-200 shadow-sm' : 'bg-transparent py-8 border-transparent'}`}>
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 flex items-center justify-between">
-            <div className="flex items-center gap-4 cursor-pointer" onClick={() => window.scrollTo({top:0, behavior:'smooth'})}>
-                <img src="/images/akrabilab-logo.png" alt="Logo" className="h-10 md:h-12 w-auto" />
+            <div className="flex items-center gap-4 cursor-pointer group" onClick={handleLogoClick}>
+                <img src="/images/akrabilab-logo.png" alt="Logo" className="h-10 md:h-12 w-auto transition-transform group-active:scale-90" />
                 <div className="h-6 w-px bg-slate-300 hidden sm:block"></div>
                 <div className="flex flex-col leading-none">
                     <span className="text-lg md:text-xl font-black tracking-tighter text-slate-800 uppercase">AKRABIOLAB</span>
@@ -80,7 +94,6 @@ export default function ClientLanding() {
                 <button onClick={() => scrollToSection('about')} className="hover:text-emerald-600 transition-colors">Vision</button>
                 <button onClick={() => scrollToSection('products')} className="hover:text-emerald-600 transition-colors">Produits</button>
                 <button onClick={() => scrollToSection('contact')} className="hover:text-emerald-600 transition-colors">Contact</button>
-                <button onClick={() => router.push('/admin-login')} className="px-6 py-2 bg-slate-900 text-white rounded-full hover:bg-emerald-600 transition-all shadow-lg shadow-slate-200">Accès Pro</button>
             </div>
 
             <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden p-3 bg-white border border-slate-200 rounded-xl shadow-sm">
@@ -186,7 +199,7 @@ export default function ClientLanding() {
                         <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                         <div className="absolute bottom-8 left-8 right-8 translate-y-[130%] group-hover:translate-y-0 transition-transform duration-700 z-10">
                              <div className="bg-white/95 backdrop-blur-xl p-5 rounded-2xl shadow-2xl border border-white text-center">
-                                <span className="text-[9px] font-black uppercase tracking-widest text-emerald-600">Pureté Certifiée</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest text-emerald-600 font-bold">Qualité Supérieure</span>
                              </div>
                         </div>
                     </div>
@@ -199,7 +212,7 @@ export default function ClientLanding() {
                         <p className="text-[11px] text-slate-400 font-medium leading-relaxed mb-10 line-clamp-3 italic">{p.description}</p>
                         <div className="mt-auto pt-8 border-t border-slate-100 flex items-center justify-between">
                             <div>
-                                <p className="text-[8px] font-black uppercase text-slate-400 mb-1 tracking-widest">Prix HT</p>
+                                <p className="text-[8px] font-black uppercase text-slate-400 mb-1 tracking-widest">Prix Unitaire HT</p>
                                 <p className="text-3xl font-black text-slate-900 leading-none">{parseFloat(p.unit_price).toLocaleString()} <span className="text-xs text-emerald-600 font-black">DA</span></p>
                             </div>
                             <button className="w-14 h-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center hover:bg-emerald-600 transition-all shadow-xl active:scale-90">
@@ -241,7 +254,7 @@ export default function ClientLanding() {
             </div>
             <div className="bg-emerald-600 p-12 lg:p-24 rounded-[4rem] shadow-[0_50px_100px_-20px_rgba(16,185,129,0.3)] relative group overflow-hidden">
                 <div className="absolute top-0 right-0 p-12 text-white/10 -rotate-12 translate-x-12 -translate-y-12 group-hover:rotate-0 transition-transform duration-1000"><Microscope size={240}/></div>
-                <h3 className="text-4xl font-black uppercase tracking-tighter leading-tight mb-10 relative z-10">Devenir Partenaire</h3>
+                <h3 className="text-4xl font-black uppercase tracking-tighter leading-tight mb-10 relative z-10">Partenariat Professionnel</h3>
                 <p className="text-emerald-50 font-medium mb-16 leading-relaxed relative z-10 text-lg">Distribuez nos solutions et profitez d'une expertise reconnue sur tout le territoire national.</p>
                 <button className="w-full py-6 bg-slate-900 text-white font-black rounded-2xl flex items-center justify-center gap-4 hover:bg-black transition-all relative z-10 text-lg shadow-2xl">
                     OUVRIR UN DOSSIER <ArrowUpRight size={24}/>
@@ -275,7 +288,7 @@ export default function ClientLanding() {
             </div>
             <div className="flex flex-col gap-12">
                 {['Innovation', 'Solutions', 'Partenariat'].map((text, i) => (
-                    <button key={text} onClick={() => scrollToSection(i === 0 ? 'about' : i === 1 ? 'products' : 'contact')} className="text-5xl font-black uppercase tracking-tighter text-slate-300 hover:text-emerald-600 text-left transition-colors">{text}</button>
+                    <button key={text} onClick={() => scrollToSection(i === 0 ? 'about' : i === 1 ? 'products' : 'contact')} className="text-6xl font-black uppercase tracking-tighter text-slate-300 hover:text-emerald-600 text-left transition-colors">{text}</button>
                 ))}
             </div>
             <div className="mt-auto pb-10 text-center text-slate-300 font-black text-[9px] uppercase tracking-[1em]">AKRABIOLAB EXPERTISE</div>
