@@ -998,21 +998,6 @@ function TabButton({ active, onClick, label, icon }: TabButtonProps) {
     )
 }
 
-interface TabButtonProps {
-    active: boolean;
-    onClick: () => void;
-    label: string;
-    icon: React.ReactNode;
-}
-
-function TabButton({ active, onClick, label, icon }: TabButtonProps) {
-    return (
-        <button onClick={onClick} className={`px-4 md:px-10 py-3 md:py-5 rounded-xl md:rounded-[2rem] font-black text-xs md:text-sm flex items-center gap-2 md:gap-4 transition-all whitespace-nowrap active:scale-95 ${active ? 'bg-slate-900 text-white shadow-[0_10px_20px_-5px_rgba(0,0,0,0.2)] md:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] scale-105' : 'bg-white text-slate-400 hover:bg-emerald-50 hover:text-emerald-600 border border-slate-100'}`}>
-            {icon} {label}
-        </button>
-    )
-}
-
 interface InsightCardProps {
     label: string;
     value: string | number;
