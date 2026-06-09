@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   ShieldCheck, Zap, Factory, ChevronRight, Package, 
-  Star, Menu, X, ArrowUpRight, ArrowRight, Microscope, Beaker, ClipboardCheck, Activity
+  Star, Menu, X, ArrowUpRight, ArrowRight, Microscope, Beaker, ClipboardCheck, Activity, Facebook, Instagram
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { API_BASE_URL } from '@/lib/api'
