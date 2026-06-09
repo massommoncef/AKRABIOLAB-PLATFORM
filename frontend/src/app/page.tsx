@@ -107,19 +107,13 @@ export default function ClientLanding() {
                 </div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.2 }} className="relative group">
-                <div className="aspect-square bg-slate-50 rounded-[3rem] p-12 lg:p-20 relative overflow-hidden flex items-center justify-center border border-slate-100 shadow-inner">
-                    <img src="/images/akrabilab-logo.png" className="w-full max-w-xs h-auto filter grayscale opacity-20 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" alt="Laboratory" />
-                    <div className="absolute inset-0 border-[2rem] border-white rounded-[3rem]"></div>
-                </div>
-                
-                {/* Micro-Data Cards */}
-                <div className="absolute -top-8 -right-4 md:-top-12 md:-right-8 bg-white p-6 rounded-2xl shadow-2xl border border-emerald-50 flex items-center gap-5">
-                    <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl"><Activity size={24}/></div>
-                    <div>
-                        <p className="text-2xl font-black text-slate-900 leading-none">99.9%</p>
-                        <p className="text-[8px] font-black uppercase text-slate-400 tracking-widest mt-1">Conformité Pureté</p>
-                    </div>
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.2 }} className="relative group">
+                <div className="aspect-square bg-slate-50 rounded-[3rem] relative overflow-hidden flex items-center justify-center border border-slate-100 shadow-inner group-hover:shadow-orange-100 transition-all duration-700">
+                    <img src="/images/akrabilab-logo.png" className="w-full h-full object-cover filter grayscale opacity-20 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000 group-hover:scale-105" alt="Laboratory" />
+                    
+                    {/* Subtle Orange Glow */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-orange-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+                    <div className="absolute inset-0 border-[1.5rem] border-white rounded-[3rem]"></div>
                 </div>
             </motion.div>
         </div>
