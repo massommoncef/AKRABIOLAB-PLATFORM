@@ -244,13 +244,17 @@ export default function ClientLanding() {
                     REJOINDRE <br/> <span className="text-emerald-500 font-serif lowercase italic">l'alliance</span>.
                 </h2>
                 <div className="space-y-12">
-                    <ContactInfo label="Siège Administratif" value="Local N° 01, RDC, Sidi Moussa 16046, Alger" />
-                    <ContactInfo label="Ligne Directe" value="0797 21 22 52" />
+                    <a href="https://maps.app.goo.gl/yYvE9pQvJ7BfG6bZ7" target="_blank" className="block group">
+                        <ContactInfo label="Siège Social" value="Local N° 01, RDC, Sidi Moussa 16046, Alger" />
+                        <span className="text-[8px] font-black text-emerald-500 uppercase tracking-widest mt-2 group-hover:underline flex items-center gap-2">Voir sur Google Maps <ArrowUpRight size={10}/></span>
+                    </a>
+                    <ContactInfo label="Département Commercial" value="0797 21 22 52" />
                     <div className="flex gap-6 pt-6">
-                        <SocialLink href="https://www.facebook.com/Akrabiolab/" label="Facebook" />
-                        <SocialLink href="https://www.instagram.com/laboratoire_akrabiolab/" label="Instagram" />
+                        <SocialLink href="https://www.facebook.com/Akrabiolab/" icon={<Facebook size={20}/>} label="Facebook" />
+                        <SocialLink href="https://www.instagram.com/laboratoire_akrabiolab/" icon={<Instagram size={20}/>} label="Instagram" />
                     </div>
                 </div>
+
             </div>
             <div className="bg-emerald-600 p-12 lg:p-24 rounded-[4rem] shadow-[0_50px_100px_-20px_rgba(16,185,129,0.3)] relative group overflow-hidden">
                 <div className="absolute top-0 right-0 p-12 text-white/10 -rotate-12 translate-x-12 -translate-y-12 group-hover:rotate-0 transition-transform duration-1000"><Microscope size={240}/></div>

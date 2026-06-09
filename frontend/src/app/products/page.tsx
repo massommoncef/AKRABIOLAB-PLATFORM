@@ -102,7 +102,7 @@ export default function FullCatalog() {
             
             <div className="flex flex-col items-center leading-none">
                 <span className="text-xl font-black tracking-tighter text-slate-800 uppercase">CATALOGUE COMPLET</span>
-                <span className="text-[8px] font-bold text-emerald-600 uppercase tracking-[0.3em] mt-1">Sidi Moussa — Alger</span>
+                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.3em] mt-2">Sidi Moussa — Alger</span>
             </div>
 
             <div className="w-full md:w-auto flex items-center gap-4">
