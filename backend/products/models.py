@@ -1,16 +1,6 @@
 from django.db import models
 from inventory.models import RawMaterial, Packaging
 
-class Category(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
-
-    class Meta:
-        verbose_name_plural = "Categories"
-
-    def __str__(self):
-        return self.name
-
 class Product(models.Model):
     UNIT_CHOICES = [
         ('L', 'Liters'),
@@ -18,7 +8,6 @@ class Product(models.Model):
         ('UNIT', 'Units'),
     ]
     
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
     name = models.CharField(max_length=200)
     description = models.TextField()
     image = models.ImageField(upload_to='products/', null=True, blank=True)

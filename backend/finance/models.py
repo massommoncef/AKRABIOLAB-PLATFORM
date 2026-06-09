@@ -29,7 +29,15 @@ class Client(models.Model):
 
     @property
     def balance(self):
-        return self.total_debt - self.total_paid
+        # La balance est la dette restante : Dette Totale - Total Payé
+        # On s'assure qu'elle ne soit pas négative par sécurité d'affichage
+        res = self.total_debt - self.total_paid
+        return max(res, 0)
+
+    def save(self, *args, **kwargs):
+        # Régularisation : si par erreur total_paid > total_debt, on peut choisir de plafonner
+        # Mais ici on va laisser la logique de validation faire le travail.
+        super().save(*args, **kwargs)
 
 class Payment(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='payments')

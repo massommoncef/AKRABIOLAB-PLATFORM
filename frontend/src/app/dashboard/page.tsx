@@ -15,7 +15,6 @@ export default function OwnerDashboard() {
   const [orders, setOrders] = useState<any[]>([])
   const [products, setProducts] = useState<any[]>([])
   const [materials, setMaterials] = useState<any[]>([])
-  const [categories, setCategories] = useState<any[]>([])
   const [activeTab, setActiveTab] = useState('overview')
   
   const [clientSearch, setClientSearch] = useState('')
@@ -50,8 +49,8 @@ export default function OwnerDashboard() {
   const [newClient, setNewClient] = useState({ name: '', domain: 'SOCIETE', address: '', phone: '', nif: '', rc: '' })
   const [newPayment, setNewPayment] = useState({ client: '', amount: 1, note: '' })
   
-  const [newProduct, setNewProduct] = useState({ name: '', description: '', image: null, purchase_price: 1, unit_price: 1, category: '', quantity: 0, unit: 'UNIT' })
-  const [editProductData, setEditProductData] = useState({ id: '', name: '', description: '', image: null, purchase_price: 1, unit_price: 1, category: '', quantity: 0, unit: 'UNIT' })
+  const [newProduct, setNewProduct] = useState({ name: '', description: '', image: null, purchase_price: 1, unit_price: 1, quantity: 0, unit: 'UNIT' })
+  const [editProductData, setEditProductData] = useState({ id: '', name: '', description: '', image: null, purchase_price: 1, unit_price: 1, quantity: 0, unit: 'UNIT' })
 
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
@@ -80,12 +79,11 @@ export default function OwnerDashboard() {
 
     try {
       const headers = { 'Authorization': `Bearer ${token}` };
-      const [cRes, oRes, pRes, mRes, catRes] = await Promise.all([
+      const [cRes, oRes, pRes, mRes] = await Promise.all([
         fetch(`${API_BASE_URL}/api/finance/clients/`, { headers }),
         fetch(`${API_BASE_URL}/api/orders/list/`, { headers }),
         fetch(`${API_BASE_URL}/api/products/items/`, { headers }),
-        fetch(`${API_BASE_URL}/api/inventory/materials/`, { headers }),
-        fetch(`${API_BASE_URL}/api/products/categories/`, { headers })
+        fetch(`${API_BASE_URL}/api/inventory/materials/`, { headers })
       ]);
 
       if (cRes.status === 401) {
@@ -98,7 +96,6 @@ export default function OwnerDashboard() {
       setOrders(await oRes.json());
       setProducts(await pRes.json());
       setMaterials(await mRes.json());
-      setCategories(await catRes.json());
     } catch(err) { 
       console.error(err);
     } finally {
@@ -197,7 +194,6 @@ export default function OwnerDashboard() {
     formData.append('description', newProduct.description);
     formData.append('purchase_price', newProduct.purchase_price.toString());
     formData.append('unit_price', newProduct.unit_price.toString());
-    formData.append('category', newProduct.category);
     formData.append('quantity', newProduct.quantity.toString());
     formData.append('unit', newProduct.unit);
     if (newProduct.image) formData.append('image', newProduct.image);
@@ -210,7 +206,7 @@ export default function OwnerDashboard() {
       });
       if (res.ok) {
         setShowProductModal(false);
-        setNewProduct({ name: '', description: '', image: null, purchase_price: 1, unit_price: 1, category: '', quantity: 0, unit: 'UNIT' });
+        setNewProduct({ name: '', description: '', image: null, purchase_price: 1, unit_price: 1, quantity: 0, unit: 'UNIT' });
         await fetchData();
       }
     } catch (err) { console.error(err) }
@@ -224,7 +220,6 @@ export default function OwnerDashboard() {
     formData.append('description', editProductData.description);
     formData.append('purchase_price', editProductData.purchase_price.toString());
     formData.append('unit_price', editProductData.unit_price.toString());
-    formData.append('category', editProductData.category);
     formData.append('quantity', editProductData.quantity.toString());
     formData.append('unit', editProductData.unit);
     if ((editProductData.image as any) instanceof File) {
@@ -324,6 +319,19 @@ export default function OwnerDashboard() {
     } catch (err) { console.error("Client creation error:", err) }
   }
 
+  const handleDeleteClient = async (clientId: string | number) => {
+    if (confirm("Supprimer définitivement ce client ? Toutes ses données financières seront effacées.")) {
+      const token = localStorage.getItem('akrabiolab_access');
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/finance/clients/${clientId}/`, { 
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) await fetchData();
+      } catch (err) { console.error(err) }
+    }
+  }
+
   const handleAddPayment = async (e: React.FormEvent) => {
     e.preventDefault()
     const token = localStorage.getItem('akrabiolab_access');
@@ -331,7 +339,7 @@ export default function OwnerDashboard() {
     const balance = client ? parseFloat(client.total_debt) - parseFloat(client.total_paid) : 0;
 
     if (parseFloat(newPayment.amount as any) > balance) {
-        showMsg(`Le montant (${newPayment.amount} DA) dépasse la dette actuelle (${balance} DA).`, 'error');
+        showMsg(`Impossible : L'encaissement (${newPayment.amount} DA) est plus grand que la dette (${balance} DA).`, 'error');
         return;
     }
 
@@ -403,7 +411,7 @@ export default function OwnerDashboard() {
   const filteredClients = (clients as any[]).filter(c => c.name.toLowerCase().includes(clientSearch.toLowerCase()))
 
   const totalPaid = (clients as any[]).reduce((acc: number, c: any) => acc + (parseFloat(c.total_paid) || 0), 0)
-  const currentBalance = (clients as any[]).reduce((acc: number, c: any) => acc + (parseFloat(c.total_debt || 0) - parseFloat(c.total_paid || 0)), 0)
+  const currentBalance = (clients as any[]).reduce((acc: number, c: any) => acc + Math.max(0, (parseFloat(c.total_debt || 0) - parseFloat(c.total_paid || 0))), 0)
 
   const renderProductImage = (img: string | null) => {
     if (!img) return '/images/akrabilab-logo.png';
@@ -471,7 +479,6 @@ export default function OwnerDashboard() {
                                     <button onClick={() => { setSelectedProduct(prod); setStockAddAddAmount(1); setShowProductStockModal(true); }} className="p-2 md:p-3 bg-emerald-600 text-white rounded-lg md:rounded-xl shadow-lg md:opacity-0 group-hover:opacity-100 transform translate-y-0 md:translate-y-2 md:group-hover:translate-y-0 transition-all"><Plus size={16}/></button>
                                 </div>
                                 <h4 className="text-base md:text-lg font-black text-slate-800 leading-tight mb-1 md:mb-2">{prod.name}</h4>
-                                <p className="text-[9px] md:text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">{prod.category_name}</p>
                                 <div className="mt-2 flex items-end justify-between border-t border-slate-100 pt-4 md:pt-6">
                                     <div>
                                         <p className="text-[9px] md:text-[10px] font-black uppercase text-slate-400 mb-1">En Stock</p>
@@ -589,7 +596,6 @@ export default function OwnerDashboard() {
                                             description: product.description,
                                             purchase_price: product.purchase_price,
                                             unit_price: product.unit_price,
-                                            category: product.category,
                                             image: product.image,
                                             quantity: product.quantity,
                                             unit: product.unit
@@ -602,7 +608,6 @@ export default function OwnerDashboard() {
                             <div className="p-6 md:p-8">
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
-                                        <p className="text-[9px] md:text-[10px] font-black uppercase text-emerald-600 tracking-widest mb-1">{product.category_name}</p>
                                         <h4 className="text-base md:text-xl font-black text-slate-800 leading-tight">{product.name}</h4>
                                     </div>
                                 </div>
@@ -636,20 +641,28 @@ export default function OwnerDashboard() {
                             {(filteredClients as any[]).map((client: any) => (
                                 <tr key={client.id} className="hover:bg-slate-50/50 transition-colors">
                                     <td className="px-6 md:px-10 py-6 md:py-8"><div className="font-black text-slate-800 text-base md:text-lg">{client.name}</div><div className="text-[10px] md:text-xs text-slate-400 font-bold">{client.phone}</div></td>
-                                    <td className="px-6 md:px-10 py-6 md:py-8 font-black text-rose-600 text-lg md:text-xl">{(parseFloat(client.total_debt) - parseFloat(client.total_paid)).toLocaleString()} DA</td>
+                                    <td className="px-6 md:px-10 py-6 md:py-8 font-black text-rose-600 text-lg md:text-xl">{Math.max(0, (parseFloat(client.total_debt) - parseFloat(client.total_paid))).toLocaleString()} DA</td>
                                     <td className="px-6 md:px-10 py-6 md:py-8 text-center">
-                                        <button 
-                                            onClick={() => {setNewPayment({...newPayment, client: client.id}); setShowPaymentModal(true);}} 
-                                            disabled={(parseFloat(client.total_debt) - parseFloat(client.total_paid)) <= 0}
-                                            className={`p-3 md:p-4 rounded-xl md:rounded-2xl shadow-xl transition-all ${
-                                                (parseFloat(client.total_debt) - parseFloat(client.total_paid)) <= 0 
-                                                ? 'bg-slate-100 text-slate-300 cursor-not-allowed' 
-                                                : 'bg-emerald-600 text-white hover:scale-105 shadow-emerald-200'
-                                            }`}
-                                            title={(parseFloat(client.total_debt) - parseFloat(client.total_paid)) <= 0 ? "Aucune dette à encaisser" : "Encaisser un paiement"}
-                                        >
-                                            <DollarSign size={20}/>
-                                        </button>
+                                        <div className="flex justify-center gap-2 md:gap-4">
+                                            <button 
+                                                onClick={() => {setNewPayment({...newPayment, client: client.id}); setShowPaymentModal(true);}} 
+                                                disabled={(parseFloat(client.total_debt) - parseFloat(client.total_paid)) <= 0}
+                                                className={`p-3 md:p-4 rounded-xl md:rounded-2xl shadow-xl transition-all ${
+                                                    (parseFloat(client.total_debt) - parseFloat(client.total_paid)) <= 0 
+                                                    ? 'bg-slate-100 text-slate-300 cursor-not-allowed' 
+                                                    : 'bg-emerald-600 text-white hover:scale-105 shadow-emerald-200'
+                                                }`}
+                                                title={(parseFloat(client.total_debt) - parseFloat(client.total_paid)) <= 0 ? "Aucune dette à encaisser" : "Encaisser un paiement"}
+                                            >
+                                                <DollarSign size={20}/>
+                                            </button>
+                                            <button 
+                                                onClick={() => handleDeleteClient(client.id)}
+                                                className="p-3 md:p-4 bg-rose-50 text-rose-600 rounded-xl md:rounded-2xl hover:bg-rose-600 hover:text-white transition-all shadow-xl shadow-rose-100"
+                                            >
+                                                <Trash2 size={20}/>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
@@ -809,13 +822,6 @@ export default function OwnerDashboard() {
                             <p className="text-[10px] font-black uppercase text-slate-400 mb-1 ml-1">Nom</p>
                             <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold" type="text" value={newProduct.name} onChange={(e: any) => handleNameChange(e)} required />
                         </div>
-                        <div className="col-span-2">
-                            <p className="text-[10px] font-black uppercase text-slate-400 mb-1 ml-1">Catégorie</p>
-                            <select className="w-full p-5 bg-slate-50 rounded-2xl font-bold" value={newProduct.category} onChange={(e: any) => setNewProduct({...newProduct, category: e.target.value})} required>
-                                <option value="">Sélectionner...</option>
-                                {(categories as any[]).map((cat: any) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
-                            </select>
-                        </div>
                         <div>
                             <p className="text-[10px] font-black uppercase text-slate-400 mb-1 ml-1">Unité</p>
                             <select className="w-full p-5 bg-slate-50 rounded-2xl font-bold" value={newProduct.unit} onChange={(e: any) => setNewProduct({...newProduct, unit: e.target.value})} required>
@@ -863,12 +869,6 @@ export default function OwnerDashboard() {
                         <div className="col-span-2">
                             <p className="text-[10px] font-black uppercase text-slate-400 mb-1 ml-1">Nom</p>
                             <input className="w-full p-5 bg-slate-50 rounded-2xl font-bold" type="text" value={editProductData.name} onChange={(e: any) => setEditProductData({...editProductData, name: e.target.value})} required />
-                        </div>
-                        <div className="col-span-2">
-                            <p className="text-[10px] font-black uppercase text-slate-400 mb-1 ml-1">Catégorie</p>
-                            <select className="w-full p-5 bg-slate-50 rounded-2xl font-bold" value={editProductData.category} onChange={(e: any) => setEditProductData({...editProductData, category: e.target.value})} required>
-                                {(categories as any[]).map((cat: any) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
-                            </select>
                         </div>
                         <div>
                             <p className="text-[10px] font-black uppercase text-slate-400 mb-1 ml-1">Unité</p>
@@ -981,6 +981,21 @@ function ModernNotification({ notification, onClose }: ModernNotificationProps) 
       </motion.div>
     </div>
   )
+}
+
+interface TabButtonProps {
+    active: boolean;
+    onClick: () => void;
+    label: string;
+    icon: React.ReactNode;
+}
+
+function TabButton({ active, onClick, label, icon }: TabButtonProps) {
+    return (
+        <button onClick={onClick} className={`px-4 md:px-10 py-3 md:py-5 rounded-xl md:rounded-[2rem] font-black text-xs md:text-sm flex items-center gap-2 md:gap-4 transition-all whitespace-nowrap active:scale-95 ${active ? 'bg-slate-900 text-white shadow-[0_10px_20px_-5px_rgba(0,0,0,0.2)] md:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] scale-105' : 'bg-white text-slate-400 hover:bg-emerald-50 hover:text-emerald-600 border border-slate-100'}`}>
+            {icon} {label}
+        </button>
+    )
 }
 
 interface TabButtonProps {
