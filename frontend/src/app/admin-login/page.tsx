@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Lock, User, ArrowRight, ShieldCheck } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -12,6 +12,13 @@ export default function AdminLogin() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+
+  // Already logged in? Skip the login screen entirely.
+  useEffect(() => {
+    if (localStorage.getItem('akrabiolab_access') || localStorage.getItem('akrabiolab_refresh')) {
+      router.replace('/dashboard')
+    }
+  }, [router])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()

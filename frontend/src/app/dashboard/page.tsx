@@ -14,7 +14,6 @@ export default function OwnerDashboard() {
   const [clients, setClients] = useState<any[]>([])
   const [orders, setOrders] = useState<any[]>([])
   const [products, setProducts] = useState<any[]>([])
-  const [materials, setMaterials] = useState<any[]>([])
   const [activeTab, setActiveTab] = useState('overview')
   
   const [clientSearch, setClientSearch] = useState('')
@@ -70,23 +69,47 @@ export default function OwnerDashboard() {
     }
   }
 
+  const tryRefreshToken = async () => {
+    const refresh = localStorage.getItem('akrabiolab_refresh');
+    if (!refresh) return false;
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/token/refresh/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh })
+      });
+      if (!res.ok) return false;
+      const data = await res.json();
+      if (data.access) localStorage.setItem('akrabiolab_access', data.access);
+      if (data.refresh) localStorage.setItem('akrabiolab_refresh', data.refresh);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const fetchData = async () => {
-    const token = localStorage.getItem('akrabiolab_access');
+    let token = localStorage.getItem('akrabiolab_access');
     if (!token) {
-      router.push('/admin-login');
-      return;
+      const refreshed = await tryRefreshToken();
+      if (!refreshed) {
+        router.push('/admin-login');
+        return;
+      }
+      token = localStorage.getItem('akrabiolab_access');
     }
 
     try {
       const headers = { 'Authorization': `Bearer ${token}` };
-      const [cRes, oRes, pRes, mRes] = await Promise.all([
+      const [cRes, oRes, pRes] = await Promise.all([
         fetch(`${API_BASE_URL}/api/finance/clients/`, { headers }),
         fetch(`${API_BASE_URL}/api/orders/list/`, { headers }),
-        fetch(`${API_BASE_URL}/api/products/`, { headers }),
-        fetch(`${API_BASE_URL}/api/inventory/materials/`, { headers })
+        fetch(`${API_BASE_URL}/api/products/`, { headers })
       ]);
 
       if (cRes.status === 401) {
+        const refreshed = await tryRefreshToken();
+        if (refreshed) { await fetchData(); return; }
         localStorage.removeItem('akrabiolab_access');
         router.push('/admin-login');
         return;
@@ -95,30 +118,22 @@ export default function OwnerDashboard() {
       const cData = await cRes.json();
       const oData = await oRes.json();
       const pData = await pRes.json();
-      const mData = await mRes.json();
 
       setClients(Array.isArray(cData) ? cData : []);
       setOrders(Array.isArray(oData) ? oData : []);
       setProducts(Array.isArray(pData) ? pData : []);
-      setMaterials(Array.isArray(mData) ? mData : []);
-    } catch(err) { 
+    } catch(err) {
       console.error(err);
       setClients([]);
       setOrders([]);
       setProducts([]);
-      setMaterials([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  useEffect(() => { 
-    const token = localStorage.getItem('akrabiolab_access');
-    if (!token) {
-      router.push('/admin-login');
-    } else {
-      fetchData();
-    }
+  useEffect(() => {
+    fetchData();
   }, [])
 
   if (isLoading) {
@@ -180,7 +195,7 @@ export default function OwnerDashboard() {
     const token = localStorage.getItem('akrabiolab_access');
     try {
       const newQty = parseFloat((selectedProduct as any).quantity) + parseFloat(stockAddAmount as any);
-      const res = await fetch(`${API_BASE_URL}/api/products/items/${(selectedProduct as any).id}/`, {
+      const res = await fetch(`${API_BASE_URL}/api/products/${(selectedProduct as any).id}/`, {
           method: 'PATCH',
           headers: { 
             'Content-Type': 'application/json',
@@ -208,7 +223,7 @@ export default function OwnerDashboard() {
     if (newProduct.image) formData.append('image', newProduct.image);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/products/items/`, {
+      const res = await fetch(`${API_BASE_URL}/api/products/`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
@@ -236,7 +251,7 @@ export default function OwnerDashboard() {
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/products/items/${editProductData.id}/`, {
+      const res = await fetch(`${API_BASE_URL}/api/products/${editProductData.id}/`, {
           method: 'PATCH',
           headers: { 'Authorization': `Bearer ${token}` },
           body: formData
@@ -252,7 +267,7 @@ export default function OwnerDashboard() {
     if (confirm("Supprimer définitivement ce produit du catalogue ?")) {
       const token = localStorage.getItem('akrabiolab_access');
       try {
-        const res = await fetch(`${API_BASE_URL}/api/products/items/${productId}/`, { 
+        const res = await fetch(`${API_BASE_URL}/api/products/${productId}/`, { 
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -492,34 +507,6 @@ export default function OwnerDashboard() {
                                     <div>
                                         <p className="text-[9px] md:text-[10px] font-black uppercase text-slate-400 mb-1">En Stock</p>
                                         <p className={`text-xl md:text-3xl font-black ${prod.quantity < 5 ? 'text-rose-600' : 'text-emerald-600'}`}>{prod.quantity} <small className="text-[10px] md:text-xs font-bold opacity-50 uppercase">{prod.unit}</small></p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-[2rem] md:rounded-[3.5rem] border border-slate-200 shadow-xl overflow-hidden">
-                    <div className="p-6 md:p-10 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                        <h3 className="text-lg md:text-2xl font-black uppercase tracking-tighter text-slate-800">Matières Premières</h3>
-                        <Layers className="text-slate-400" size={24} />
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 p-6 md:p-10">
-                        {(materials as any[]).map((mat: any) => (
-                            <div key={mat.id} className="p-6 md:p-8 bg-slate-50 rounded-[2rem] md:rounded-[2.5rem] border border-slate-100 group hover:bg-white hover:shadow-2xl transition-all">
-                                <div className="flex justify-between items-start mb-4 md:mb-6">
-                                    <div className="w-10 h-10 md:w-14 md:h-14 bg-emerald-100 text-emerald-600 rounded-xl md:rounded-2xl flex items-center justify-center"><Layers size={20}/></div>
-                                    <button onClick={() => { setSelectedMaterial(mat); setStockAddAddAmount(1); setShowStockUpdateModal(true); }} className="p-2 md:p-3 bg-emerald-600 text-white rounded-lg md:rounded-xl shadow-lg md:opacity-0 group-hover:opacity-100 transform translate-y-0 md:translate-y-2 md:group-hover:translate-y-0 transition-all"><Plus size={16}/></button>
-                                </div>
-                                <h4 className="text-base md:text-lg font-black text-slate-800 leading-tight mb-1 md:mb-2">{mat.name}</h4>
-                                <div className="mt-2 flex items-end justify-between border-t border-slate-100 pt-4 md:pt-6">
-                                    <div>
-                                        <p className="text-[9px] md:text-[10px] font-black uppercase text-slate-400 mb-1">Disponible</p>
-                                        <p className={`text-xl md:text-3xl font-black ${mat.quantity < 10 ? 'text-rose-600' : 'text-slate-900'}`}>{mat.quantity} <small className="text-[10px] md:text-xs font-bold opacity-50 uppercase">{mat.unit}</small></p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-[9px] md:text-[10px] font-black uppercase text-slate-400 mb-1">Coût U</p>
-                                        <p className="text-xs md:text-sm font-bold text-slate-500">{mat.unit_cost} DA</p>
                                     </div>
                                 </div>
                             </div>
