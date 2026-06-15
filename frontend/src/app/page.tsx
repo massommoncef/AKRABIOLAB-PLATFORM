@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   ShieldCheck, Zap, Factory, ChevronRight, Package, 
-  Star, Menu, X, ArrowUpRight, ArrowRight, Microscope, Beaker, ClipboardCheck, Activity, Facebook, Instagram
+  Star, Menu, X, ArrowUpRight, ArrowRight, Microscope, Beaker, ClipboardCheck, Activity
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { API_BASE_URL } from '@/lib/api'
@@ -250,8 +250,8 @@ export default function ClientLanding() {
                     </a>
                     <ContactInfo label="Département Commercial" value="0797 21 22 52" />
                     <div className="flex gap-6 pt-6">
-                        <SocialLink href="https://www.facebook.com/Akrabiolab/" icon={<Facebook size={20}/>} label="Facebook" />
-                        <SocialLink href="https://www.instagram.com/laboratoire_akrabiolab/" icon={<Instagram size={20}/>} label="Instagram" />
+                        <SocialLink href="https://www.facebook.com/Akrabiolab/" label="Facebook" />
+                        <SocialLink href="https://www.instagram.com/laboratoire_akrabiolab/" label="Instagram" />
                     </div>
                 </div>
 
