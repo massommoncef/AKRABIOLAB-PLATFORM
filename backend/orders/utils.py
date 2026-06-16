@@ -75,18 +75,23 @@ def generate_invoice_pdf(request, order_id):
     y = height - 11.5*cm
     p.setFont("Helvetica-Bold", 9)
     p.drawString(1.5*cm, y, "DÉSIGNATION DES PRODUITS")
-    p.drawString(11*cm, y, "QTÉ")
-    p.drawString(13.5*cm, y, "PRIX UNIT")
+    p.drawString(10*cm, y, "QTÉ")
+    p.drawString(12.5*cm, y, "LITRES")
+    p.drawString(14.5*cm, y, "PRIX/L")
     p.drawString(17*cm, y, "TOTAL HT")
     p.line(1.5*cm, y-0.2*cm, width-1.5*cm, y-0.2*cm)
-    
+
     y -= 0.8*cm
     p.setFont("Helvetica", 9)
+    from .formats import FORMATS
     for item in order.items.all():
-        line_total = item.quantity * item.price_at_sale
-        p.drawString(1.5*cm, y, item.product.name[:50])
-        p.drawString(11*cm, y, f"{item.quantity}")
-        p.drawString(13.5*cm, y, f"{item.price_at_sale:,.2f}")
+        line_total = float(item.liters) * float(item.price_at_sale)
+        fmt = FORMATS.get(item.format, {})
+        designation = f"{item.product.name} - {fmt.get('label', item.format)}"
+        p.drawString(1.5*cm, y, designation[:50])
+        p.drawString(10*cm, y, f"{item.quantity} {fmt.get('unit_label', '')}")
+        p.drawString(12.5*cm, y, f"{item.liters:g}")
+        p.drawString(14.5*cm, y, f"{item.price_at_sale:,.2f}")
         p.drawString(17*cm, y, f"{line_total:,.2f}")
         y -= 0.6*cm
         if y < 6*cm:
@@ -147,9 +152,12 @@ def generate_bl_pdf(request, order_id):
     
     y -= 0.8*cm
     p.setFont("Helvetica", 9)
+    from .formats import FORMATS
     for item in order.items.all():
-        p.drawString(1.5*cm, y, item.product.name[:60])
-        p.drawString(12*cm, y, f"{item.quantity}")
+        fmt = FORMATS.get(item.format, {})
+        designation = f"{item.product.name} - {fmt.get('label', item.format)}"
+        p.drawString(1.5*cm, y, designation[:60])
+        p.drawString(12*cm, y, f"{item.quantity} {fmt.get('unit_label', '')} ({item.liters:g} L)")
         p.drawString(16*cm, y, "---")
         y -= 0.6*cm
         if y < 4*cm:

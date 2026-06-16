@@ -1,6 +1,7 @@
 from django.db import models
 from products.models import Product
 from finance.models import Client
+from .formats import FORMAT_CHOICES, DEFAULT_FORMAT, liters_for
 
 class Order(models.Model):
     STATUS_CHOICES = [
@@ -31,8 +32,25 @@ class Order(models.Model):
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    # Number of format-units ordered (cartons / bidons / IBC). For VRAC, this is liters.
     quantity = models.IntegerField()
+    format = models.CharField(max_length=20, choices=FORMAT_CHOICES, default=DEFAULT_FORMAT)
+    # Total liters of liquid for this line (computed from format x quantity).
+    liters = models.FloatField(default=0)
+    # price_at_sale is the price PER LITER at the moment of sale.
     price_at_sale = models.DecimalField(max_digits=10, decimal_places=2)
+    # Whether this line's stock (liquid + packaging) is currently deducted.
+    stock_applied = models.BooleanField(default=False)
+
+    @property
+    def line_total(self):
+        return float(self.liters) * float(self.price_at_sale)
+
+    def save(self, *args, **kwargs):
+        # Always keep liters in sync with format x quantity, whatever the
+        # creation path (API, Django admin, shell).
+        self.liters = liters_for(self.format, self.quantity)
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.quantity} x {self.product.name}"
+        return f"{self.quantity} x {self.product.name} ({self.format})"

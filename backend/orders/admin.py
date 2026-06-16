@@ -7,6 +7,8 @@ from .utils import generate_invoice_pdf, generate_bl_pdf
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 1
+    fields = ('product', 'format', 'quantity', 'liters', 'price_at_sale', 'stock_applied')
+    readonly_fields = ('liters', 'stock_applied')
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):

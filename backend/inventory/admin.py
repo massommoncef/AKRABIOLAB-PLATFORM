@@ -8,5 +8,6 @@ class RawMaterialAdmin(admin.ModelAdmin):
 
 @admin.register(Packaging)
 class PackagingAdmin(admin.ModelAdmin):
-    list_display = ('type', 'size', 'quantity', 'unit_cost', 'updated_at')
+    list_display = ('type', 'size', 'alcohol_degree', 'quantity', 'low_stock_threshold', 'is_low_stock', 'unit_cost', 'updated_at')
     list_filter = ('type', 'size')
+    list_editable = ('quantity', 'low_stock_threshold')
